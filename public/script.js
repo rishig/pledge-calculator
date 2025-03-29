@@ -45,40 +45,40 @@ function calculateFormulaValue(formula) {
   const salePrice = parseInputAsNumber(salePriceInput);
   
   // Calculate basic values
-  const Spread = exercisePrice - strikePrice;
-  const Gain = salePrice - exercisePrice;
-  const Sprain = salePrice - strikePrice;
+  const spread = exercisePrice - strikePrice;
+  const gain = salePrice - exercisePrice;
+  const sprain = salePrice - strikePrice;
   
   // Process different formula types
   let result = 0;
   
-  if (formula === 'Income tax * Sprain') {
-    result = incomeTaxRate * Sprain;
-  } else if (formula === '(1 - income tax) * Sprain') {
-    result = (1 - incomeTaxRate) * Sprain;
-  } else if (formula === 'Sale price') {
+  if (formula === 'income tax * sprain') {
+    result = incomeTaxRate * sprain;
+  } else if (formula === '(1 - income tax) * sprain') {
+    result = (1 - incomeTaxRate) * sprain;
+  } else if (formula === 'sale price') {
     result = salePrice;
-  } else if (formula === '- strike price - income tax * Sprain') {
-    result = -strikePrice - incomeTaxRate * Sprain;
-  } else if (formula === 'Exercise price') {
+  } else if (formula === '- strike price - income tax * sprain') {
+    result = -strikePrice - incomeTaxRate * sprain;
+  } else if (formula === 'exercise price') {
     result = exercisePrice;
-  } else if (formula === 'Ltcg tax * Sprain') {
-    result = ltcgRate * Sprain;
-  } else if (formula === '(1 - ltcg) * Sprain') {
-    result = (1 - ltcgRate) * Sprain;
-  } else if (formula === 'AMT * Spread') {
+  } else if (formula === 'ltcg tax * sprain') {
+    result = ltcgRate * sprain;
+  } else if (formula === '(1 - ltcg) * sprain') {
+    result = (1 - ltcgRate) * sprain;
+  } else if (formula === 'amt * spread') {
     // Assume AMT is some percentage (using income tax for simplicity)
-    result = incomeTaxRate * Spread;
+    result = incomeTaxRate * spread;
   } else if (formula === '- strike price') {
     result = -strikePrice;
-  } else if (formula === 'Income tax * Spread + ltcg * Gain') {
-    result = incomeTaxRate * Spread + ltcgRate * Gain;
-  } else if (formula === '(1 - income tax) * Spread + (1 - ltcg) * Gain') {
-    result = (1 - incomeTaxRate) * Spread + (1 - ltcgRate) * Gain;
-  } else if (formula === 'Income tax * Spread') {
-    result = incomeTaxRate * Spread;
-  } else if (formula === '- strike price - income tax * Spread') {
-    result = -strikePrice - incomeTaxRate * Spread;
+  } else if (formula === 'income tax * spread + ltcg * gain') {
+    result = incomeTaxRate * spread + ltcgRate * gain;
+  } else if (formula === '(1 - income tax) * spread + (1 - ltcg) * gain') {
+    result = (1 - incomeTaxRate) * spread + (1 - ltcgRate) * gain;
+  } else if (formula === 'income tax * spread') {
+    result = incomeTaxRate * spread;
+  } else if (formula === '- strike price - income tax * spread') {
+    result = -strikePrice - incomeTaxRate * spread;
   }
   
   return multiplyByNumShares(result);
@@ -98,12 +98,12 @@ function createTableCell(formula) {
   const salePrice = parseInputAsNumber(salePriceInput);
   
   // Calculate basic values
-  const Spread = exercisePrice - strikePrice;
-  const Gain = salePrice - exercisePrice;
-  const Sprain = salePrice - strikePrice;
+  const spread = exercisePrice - strikePrice;
+  const gain = salePrice - exercisePrice;
+  const sprain = salePrice - strikePrice;
   
   // Handle special cases based on the specific formula text
-  if (formula === 'Sale price') {
+  if (formula === 'sale price') {
     return `
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(multiplyByNumShares(salePrice))}</div>
@@ -122,19 +122,19 @@ function createTableCell(formula) {
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
     `;
-  } else if (formula === '- strike price - income tax * Sprain') {
-    // The formula is "Sale price - strike price - income tax * Sprain"
-    // But written as "- strike price - income tax * Sprain" with Sale price implied
-    const value = salePrice - strikePrice - incomeTaxRate * Sprain;
+  } else if (formula === '- strike price - income tax * sprain') {
+    // The formula is "sale price - strike price - income tax * sprain"
+    // But written as "- strike price - income tax * sprain" with sale price implied
+    const value = salePrice - strikePrice - incomeTaxRate * sprain;
     
     return `
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
     `;
-  } else if (formula === '- strike price - income tax * Spread') {
-    // The formula is "Sale price - strike price - income tax * Spread"
-    // But written as "- strike price - income tax * Spread" with Sale price implied
-    const value = salePrice - strikePrice - incomeTaxRate * Spread;
+  } else if (formula === '- strike price - income tax * spread') {
+    // The formula is "sale price - strike price - income tax * spread"
+    // But written as "- strike price - income tax * spread" with sale price implied
+    const value = salePrice - strikePrice - incomeTaxRate * spread;
     
     return `
       <div class="formula">${formula}</div>
@@ -177,35 +177,35 @@ function calculateTaxes() {
   const salePrice = parseInputAsNumber(salePriceInput);
   
   // Calculate basic values
-  const Spread = exercisePrice - strikePrice;
-  const Gain = salePrice - exercisePrice;
-  const Sprain = salePrice - strikePrice;
+  const spread = exercisePrice - strikePrice;
+  const gain = salePrice - exercisePrice;
+  const sprain = salePrice - strikePrice;
   
   // Apply number of shares
-  const spreadWithShares = multiplyByNumShares(Spread);
-  const gainWithShares = multiplyByNumShares(Gain);
-  const sprainWithShares = multiplyByNumShares(Sprain);
+  const spreadWithShares = multiplyByNumShares(spread);
+  const gainWithShares = multiplyByNumShares(gain);
+  const sprainWithShares = multiplyByNumShares(sprain);
   
   // Create results HTML - simplified to one line with definitions
   let resultsHTML = `
     <div style="display: flex; gap: 30px; flex-wrap: wrap;">
       <div>
-        <div style="font-weight: 500;">Spread: ${formatCurrency(spreadWithShares)}</div>
+        <div style="font-weight: 500;">spread: ${formatCurrency(spreadWithShares)}</div>
         <div class="description">
-          Exercise price - Strike price
+          exercise price - strike price
         </div>
       </div>
       <div>
-        <div style="font-weight: 500;">Gain: ${formatCurrency(gainWithShares)}</div>
+        <div style="font-weight: 500;">gain: ${formatCurrency(gainWithShares)}</div>
         <div class="description">
-          Sale price - Exercise price
+          sale price - exercise price
         </div>
       </div>
       <div>
-        <div style="font-weight: 500;">Sprain: ${formatCurrency(sprainWithShares)}</div>
+        <div style="font-weight: 500;">sprain: ${formatCurrency(sprainWithShares)}</div>
         <div class="description">
-          Sale price - Strike price<br>
-          (or Spread + Gain)
+          sale price - strike price<br>
+          (or spread + gain)
         </div>
       </div>
     </div>
