@@ -8,46 +8,208 @@
   </head>
   <body>
     <div id="root">
-      <div class="App" style="padding: 20px; max-width: 500px; margin: 0 auto;">
-        <h1>Calculator</h1>
+      <div class="App">
+        <h1>Pledge Taxes Calculator</h1>
         
-        <div style="margin-bottom: 20px;">
-          <div style="margin-bottom: 10px;">
-            <label style="display: block; margin-bottom: 5px;">Input 1:</label>
-            <input 
-              type="number" 
-              id="input1"
-              style="width: 100%; padding: 8px; box-sizing: border-box;"
-            />
+        <div style="margin-bottom: 30px;">
+          <!-- Tax Rates Section -->
+          <h2>Tax Rates</h2>
+          
+          <div class="field-container">
+            <div class="label-container">
+              <label style="font-weight: 500;">Income tax</label>
+              <div class="description">
+                For simplification, going to pretend short term capital gains are taxed identically to income. 
+                If you're calculating this at home, remember to include NIIT for capital gains and payroll taxes for income.
+              </div>
+            </div>
+            <div class="input-group">
+              <input 
+                type="text" 
+                id="incomeTaxRate"
+                value="50"
+              />
+              <span style="margin-left: 5px;">%</span>
+            </div>
           </div>
           
-          <div style="margin-bottom: 10px;">
-            <label style="display: block; margin-bottom: 5px;">Input 2:</label>
-            <input 
-              type="number" 
-              id="input2"
-              style="width: 100%; padding: 8px; box-sizing: border-box;"
-            />
+          <div class="field-container">
+            <div class="label-container">
+              <label style="font-weight: 500;">Long term capital gains tax (ltcg)</label>
+              <div class="description">
+                If you're calculating this at home, remember to include NIIT.
+              </div>
+            </div>
+            <div class="input-group">
+              <input 
+                type="text" 
+                id="ltcgRate"
+                value="35"
+              />
+              <span style="margin-left: 5px;">%</span>
+            </div>
           </div>
           
-          <div style="margin-bottom: 10px;">
-            <label style="display: block; margin-bottom: 5px;">Input 3:</label>
-            <input 
-              type="number" 
-              id="input3"
-              style="width: 100%; padding: 8px; box-sizing: border-box;"
-            />
+          <!-- Stock Prices Section -->
+          <h2>Stock Prices</h2>
+          
+          <div class="field-container">
+            <div class="label-container">
+              <label style="font-weight: 500;">Strike price</label>
+              <div class="description">
+                The 409a valuation at the time you get your offer letter.
+              </div>
+            </div>
+            <div class="input-group">
+              <span style="margin-right: 5px;">$</span>
+              <input 
+                type="text" 
+                id="strikePrice"
+                value="10"
+              />
+            </div>
+          </div>
+          
+          <div class="field-container">
+            <div class="label-container">
+              <label style="font-weight: 500;">Exercise price</label>
+              <div class="description">
+                The 409a valuation at the time of exercise (which is at least 1 year after you got your offer letter).
+              </div>
+            </div>
+            <div class="input-group">
+              <span style="margin-right: 5px;">$</span>
+              <input 
+                type="text" 
+                id="exercisePrice"
+                value="20"
+              />
+            </div>
+          </div>
+          
+          <div class="field-container">
+            <div class="label-container">
+              <label style="font-weight: 500;">Sale price</label>
+              <div class="description">
+                The 409a valuation at the time of the liquidity event.
+              </div>
+            </div>
+            <div class="input-group">
+              <span style="margin-right: 5px;">$</span>
+              <input 
+                type="text" 
+                id="salePrice"
+                value="60"
+              />
+            </div>
+          </div>
+          
+          <!-- Results Section -->
+          <h2>Calculated Results</h2>
+          <div id="results" style="margin-bottom: 30px;">
+            Calculating...
           </div>
         </div>
         
-        <div style="
-          padding: 15px; 
-          background-color: #f5f5f5; 
-          border-radius: 5px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1)
-        ">
-          <h2 style="margin: 0 0 10px 0;">Sum</h2>
-          <div id="sum" style="font-size: 24px; font-weight: bold;">0</div>
+        <hr>
+
+        <!-- Options Comparison Table -->
+        <div style="margin-bottom: 30px;">
+          <h2>Stock Options: Compare Your Options</h2>
+          
+          <div class="grid-table-container">
+            <div class="grid-table">
+              <!-- Table Header -->
+              <div class="grid-header">Option type</div>
+              <div class="grid-header">Holding period</div>
+              <div class="grid-header">Disposal Method</div>
+              <div class="grid-header">Government gets</div>
+              <div class="grid-header">Charity gets</div>
+              <div class="grid-header">You get in cash</div>
+              <div class="grid-header">You get in tax deduction</div>
+              <div class="grid-header">Match<br>(if 1:1)</div>
+              
+              <!-- Row 1 -->
+              <div class="grid-cell">ISO or NSO</div>
+              <div class="grid-cell">Cashless exercise during liquidity</div>
+              <div class="grid-cell">Sell</div>
+              <div class="grid-cell">Income tax * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell">(1 - income tax) * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              
+              <!-- Row 2 -->
+              <div class="grid-cell">ISO or NSO</div>
+              <div class="grid-cell">Cashless exercise during liquidity</div>
+              <div class="grid-cell">Donate</div>
+              <div class="grid-cell">Income tax * Sprain</div>
+              <div class="grid-cell">(1 - income tax) * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell">(1 - income tax) * Sprain</div>
+              <div class="grid-cell">(1 - income tax) * Sprain</div>
+              
+              <!-- Row 3 -->
+              <div class="grid-cell">ISO or NSO</div>
+              <div class="grid-cell">Dispose &lt;1 yr after exercise</div>
+              <div class="grid-cell">Sell</div>
+              <div class="grid-cell">Income tax * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell">(1 - income tax) * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              
+              <!-- Row 4 -->
+              <div class="grid-cell">ISO or NSO</div>
+              <div class="grid-cell">Dispose &lt;1 yr after exercise</div>
+              <div class="grid-cell">Donate</div>
+              <div class="grid-cell">Income tax * Sprain</div>
+              <div class="grid-cell">Sale price</div>
+              <div class="grid-cell">- strike price - income tax * Sprain</div>
+              <div class="grid-cell">Exercise price</div>
+              <div class="grid-cell">Sale price</div>
+              
+              <!-- Row 5 - ISO Sell -->
+              <div class="grid-cell">ISO</div>
+              <div class="grid-cell">Dispose 1+ yr after exercise</div>
+              <div class="grid-cell">Sell</div>
+              <div class="grid-cell">Ltcg tax * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell">(1 - ltcg) * Sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              
+              <!-- Row 6 - ISO Donate -->
+              <div class="grid-cell">ISO</div>
+              <div class="grid-cell">Dispose 1+ yr after exercise</div>
+              <div class="grid-cell">Donate</div>
+              <div class="grid-cell">AMT * Spread</div>
+              <div class="grid-cell">Sale price</div>
+              <div class="grid-cell">- strike price</div>
+              <div class="grid-cell">Sale price</div>
+              <div class="grid-cell">Sale price</div>
+              
+              <!-- Row 7 - NSO Sell -->
+              <div class="grid-cell">NSO</div>
+              <div class="grid-cell">Dispose 1+ yr after exercise</div>
+              <div class="grid-cell">Sell</div>
+              <div class="grid-cell">Income tax * Spread + ltcg * Gain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell">(1 - income tax) * Spread + (1 - ltcg) * Gain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              
+              <!-- Row 8 - NSO Donate -->
+              <div class="grid-cell">NSO</div>
+              <div class="grid-cell">Dispose 1+ yr after exercise</div>
+              <div class="grid-cell">Donate</div>
+              <div class="grid-cell">Income tax * Spread</div>
+              <div class="grid-cell">Sale price</div>
+              <div class="grid-cell">- strike price - income tax * Spread</div>
+              <div class="grid-cell">Sale price</div>
+              <div class="grid-cell">Sale price</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
