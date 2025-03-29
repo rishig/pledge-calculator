@@ -96,6 +96,7 @@ strong {
   gap: 1px;
   border: 1px solid #ddd;
   background-color: #ddd; /* Grid gap color */
+  min-width: 1000px;     /* Prevent columns from becoming too narrow */
 }
 
 .grid-header {
@@ -109,6 +110,19 @@ strong {
   padding: 8px;
   background-color: white;
   font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-cell .formula {
+  font-size: 0.7rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.grid-cell .value {
+  font-weight: 500;
+  color: #333;
 }
 
 .grid-cell:nth-child(16n+1),
@@ -144,5 +158,14 @@ strong {
   .grid-cell {
     font-size: 0.7rem;
     padding: 6px 4px;
+  }
+  
+  .grid-cell .formula {
+    font-size: 0.6rem;
+    line-height: 1.2;
+  }
+  
+  .grid-cell .value {
+    font-size: 0.75rem;
   }
 }
