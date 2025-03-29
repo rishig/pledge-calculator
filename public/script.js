@@ -151,18 +151,21 @@ function createTableCell(formula) {
 
 // Update all table cells with calculated values
 function updateTableCells() {
-  // Get all grid cells (skip headers and first three columns)
+  // Get all formula cells
   const cells = document.querySelectorAll('.grid-cell');
+  const rowSize = 8; // 8 columns per row
   
+  // Update all cells that have formulas
   cells.forEach((cell, index) => {
-    // Skip the header row and the first three columns in each row
-    if (index < 8 || index % 8 < 3) {
-      return;
-    }
+    const row = Math.floor(index / rowSize);
+    const col = index % rowSize;
     
-    const formula = cell.getAttribute('data-formula');
-    if (formula) {
-      cell.innerHTML = createTableCell(formula);
+    // Only update columns 4-8 (indices 3-7) which contain formulas
+    if (col >= 3) {
+      const formula = cell.getAttribute('data-formula');
+      if (formula) {
+        cell.innerHTML = createTableCell(formula);
+      }
     }
   });
 }
@@ -220,22 +223,25 @@ function calculateTaxes() {
 
 // Initialize the table by storing formulas as data attributes
 function initializeTable() {
-  // Get all grid cells (skip headers and first three columns)
+  // Get all formula cells - these are all grid cells after the header row
   const cells = document.querySelectorAll('.grid-cell');
+  const rowSize = 8; // 8 columns per row
   
+  // Process all cells using their row and column position
   cells.forEach((cell, index) => {
-    // Skip the header row and the first three columns in each row
-    if (index < 8 || index % 8 < 3) {
-      return;
-    }
+    const row = Math.floor(index / rowSize);
+    const col = index % rowSize;
     
-    // Store original formula text as a data attribute
-    const formula = cell.textContent.trim();
-    if (formula) {
-      cell.setAttribute('data-formula', formula);
-    } else {
-      // For empty cells, set formula to empty string
-      cell.setAttribute('data-formula', '');
+    // Only process columns 4-8 (indices 3-7) which have formulas
+    if (col >= 3) {
+      // Store original formula text as a data attribute
+      const formula = cell.textContent.trim();
+      if (formula) {
+        cell.setAttribute('data-formula', formula);
+      } else {
+        // For empty cells, set formula to empty string
+        cell.setAttribute('data-formula', '');
+      }
     }
   });
   
