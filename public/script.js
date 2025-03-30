@@ -37,10 +37,76 @@ function formatNumber(amount) {
 
 // Function to get row share count
 function getRowShares(rowIndex) {
-  const input = document.querySelector(`#shares-row-${rowIndex}`);
-  if (!input) return 0;
+  console.log(`Getting shares for row ${rowIndex}`);
   
+  // Safety check
+  if (rowIndex < 1 || rowIndex > 8) {
+    console.log(`  Invalid row index: ${rowIndex}`);
+    return 0;
+  }
+  
+  let input = null;
+  
+  // Method 1: Get by direct ID
+  input = document.querySelector(`#shares-row-${rowIndex}`);
+  if (input) {
+    console.log(`  Found input by ID for row ${rowIndex}`);
+  }
+  
+  // Method 2: Try by data-row attribute if ID doesn't work
+  if (!input) {
+    console.log(`  No input found with ID shares-row-${rowIndex}, trying data-row attribute`);
+    input = document.querySelector(`input.shares-input[data-row="${rowIndex}"]`);
+    
+    if (input) {
+      console.log(`  Found input by data-row attribute for row ${rowIndex}`);
+    }
+  }
+  
+  // Method 3: Try by position in document
+  if (!input) {
+    console.log(`  No input found with ID or data-row, trying by document position`);
+    const allInputs = document.querySelectorAll('input.shares-input');
+    
+    // For row 1, we want input at index 0, and so on
+    const inputIndex = rowIndex - 1;
+    if (inputIndex >= 0 && inputIndex < allInputs.length) {
+      input = allInputs[inputIndex];
+      console.log(`  Found input by position in document, input index ${inputIndex}`);
+    }
+  }
+  
+  // Method 4: Try by grid cell index
+  if (!input) {
+    console.log(`  No input found by previous methods, trying by grid cell index`);
+    
+    // These are the expected indices for share inputs in the grid:
+    const cellIndices = [15, 23, 31, 39, 47, 55, 63, 71];
+    const cellIndex = cellIndices[rowIndex - 1];
+    
+    if (cellIndex !== undefined) {
+      const cells = document.querySelectorAll('.grid-cell');
+      
+      if (cellIndex < cells.length) {
+        const cell = cells[cellIndex];
+        input = cell.querySelector('input.shares-input');
+        
+        if (input) {
+          console.log(`  Found input through grid cell lookup at index ${cellIndex}`);
+        }
+      }
+    }
+  }
+  
+  // If still not found after all attempts
+  if (!input) {
+    console.log(`  No input found for row ${rowIndex} after all methods`);
+    return 0;
+  }
+  
+  // Get the value
   const value = parseFloat(input.value);
+  console.log(`  Share value for row ${rowIndex}: ${value}`);
   return isNaN(value) ? 0 : value;
 }
 
@@ -189,33 +255,47 @@ function createTableCell(formula, cell) {
 
 // Calculate value for a specific cell (row, column) with shares
 function calculateCellValue(row, col) {
-  // Calculate the index in the flat array of cells
-  const rowSize = 8;
-  const index = row * rowSize + col;
+  console.log(`Calculating cell value for row=${row}, col=${col}`);
+  
+  // Validate inputs
+  if (row < 1 || row > 8 || col < 0 || col > 7) {
+    throw new Error(`Invalid row or column: row=${row}, col=${col}`);
+  }
+  
+  // Hardcoded mapping of row/col to cell indices
+  const rowOffset = (row - 1) * 8; 
+  const cellIndex = rowOffset + col;
+  
+  console.log(`  Using hardcoded mapping: row=${row}, col=${col} → cellIndex=${cellIndex}`);
   
   // Find the cell
   const cells = document.querySelectorAll('.grid-cell');
-  if (index >= cells.length) return 0;
-  
-  const cell = cells[index];
-  const formula = cell.getAttribute('data-formula');
-  
-  if (!formula) return 0;
-  
-  // Get the value by parsing the formula
-  let value = 0;
-  
-  if (formula) {
-    // Use the existing calculation function
-    value = calculateFormulaValue(formula);
+  if (cellIndex >= cells.length) {
+    console.log(`  Cell index ${cellIndex} out of bounds (${cells.length} cells total)`);
+    return 0;
   }
   
-  // Multiply by number of shares for this row
-  const shares = getRowShares(row);
+  const cell = cells[cellIndex];
+  const formula = cell.getAttribute('data-formula');
   
-  // If shares is 0, return 0
+  if (!formula) {
+    console.log(`  No formula found for cell at index ${cellIndex}`);
+    return 0;
+  }
+  
+  console.log(`  Formula: "${formula}"`);
+  
+  // Get base value from formula
+  const value = calculateFormulaValue(formula);
+  
+  // Get shares for this specific row
+  const shares = getRowShares(row);
+  console.log(`  Row ${row} has ${shares} shares`);
+  
+  // If no shares, return 0
   if (shares === 0) return 0;
   
+  // Calculate final value
   return value * shares;
 }
 
@@ -252,6 +332,8 @@ function formatTotalValue(value) {
 
 // Update the totals row
 function updateTotals() {
+  console.log("----------- UPDATING TOTALS -----------");
+  
   // Calculate totals for columns 4-7 (indices 3-6)
   const totalGov = document.getElementById('total-gov');
   const totalCharity = document.getElementById('total-charity');
@@ -269,18 +351,38 @@ function updateTotals() {
   let deductionTotal = 0;
   let sharesTotal = 0;
   
+  // Debug: log all share inputs to verify
+  const allInputs = document.querySelectorAll('input.shares-input');
+  console.log(`Found ${allInputs.length} share inputs total`);
+  allInputs.forEach((input, i) => {
+    console.log(`Input ${i+1}: id=${input.id}, value=${input.value}, dataRow=${input.getAttribute('data-row')}`);
+  });
+  
   // Sum up each column (multiply by shares)
   for (let row = 1; row <= numRows; row++) { // Start at 1 to include the first data row
+    console.log(`\nProcessing row ${row}:`);
+    
     // Get shares for this row
     const shares = getRowShares(row);
+    console.log(`Row ${row}: Shares = ${shares}`);
     sharesTotal += shares;
     
-    // Add values multiplied by shares
-    govTotal += calculateCellValue(row, 3);      // Government gets
-    charityTotal += calculateCellValue(row, 4);  // Charity gets
-    cashTotal += calculateCellValue(row, 5);     // You get in cash
-    deductionTotal += calculateCellValue(row, 6); // You get in tax deduction
+    // Debug for each cell calculation
+    const govValue = calculateCellValue(row, 3);
+    const charityValue = calculateCellValue(row, 4);
+    const cashValue = calculateCellValue(row, 5);
+    const deductionValue = calculateCellValue(row, 6);
+    
+    console.log(`Row ${row} values: Gov = ${govValue}, Charity = ${charityValue}, Cash = ${cashValue}, Deduction = ${deductionValue}`);
+    
+    // Add values
+    govTotal += govValue;         // Government gets
+    charityTotal += charityValue; // Charity gets
+    cashTotal += cashValue;       // You get in cash
+    deductionTotal += deductionValue; // You get in tax deduction
   }
+  
+  console.log(`\nFinal totals: Gov = ${govTotal}, Charity = ${charityTotal}, Cash = ${cashTotal}, Deduction = ${deductionTotal}, Shares = ${sharesTotal}`);
   
   // Display the totals - blank if zero
   totalGov.innerHTML = formatTotalValue(govTotal);
@@ -291,6 +393,8 @@ function updateTotals() {
   // Total shares is always displayed, even if zero
   totalShares.innerHTML = sharesTotal > 0 ? 
     `<div class="shares-total-container"><div class="shares-total-value">${sharesTotal}</div></div>` : '';
+    
+  console.log("----------- TOTALS UPDATED -----------");
 }
 
 // Function to calculate taxes and display results
@@ -347,9 +451,16 @@ function initializeTable() {
   const rowSize = 8; // 8 columns per row
   
   // Process all cells using their row and column position
+  console.log(`Total cells found: ${cells.length}`);
+  
   cells.forEach((cell, index) => {
     const row = Math.floor(index / rowSize);
     const col = index % rowSize;
+    
+    // Debug first few rows
+    if (index < 32) {
+      console.log(`Cell ${index}: row=${row}, col=${col}, content="${cell.textContent.trim()}", hasInput=${!!cell.querySelector('input.shares-input')}`);
+    }
     
     // Process columns 4-7 (indices 3-6) which have formulas
     if (col >= 3 && col < 7) {
@@ -368,12 +479,32 @@ function initializeTable() {
       // Find the input element within this cell
       const input = cell.querySelector('input.shares-input');
       if (input) {
-        // Set a unique ID based on the row
-        input.id = `shares-row-${row}`;
+        // Debug for share input detection
+        console.log(`Found shares input at index ${index}, row=${row}, col=${col}`);
+      
+        // Calculate the data row - use a better formula
+        // Header row is first 8 cells (0-7)
+        // First data row is cells 8-15, which is row 1
+        // If index is 15, that's the first row's share input
+        // (index - 8) / 8 + 1
+        const dataRow = Math.floor((index - 8) / 8) + 1;
         
-        // Add event listener to handle input changes
+        console.log(`  Calculated dataRow=${dataRow} for index=${index}`);
+        
+        // Set a unique ID based on the row
+        input.id = `shares-row-${dataRow}`;
+        console.log(`  Setting input ID for dataRow ${dataRow}:`, input);
+        
+        // Add event listener to handle input changes 
         input.addEventListener('input', function() {
+          console.log(`Input changed for row ${dataRow}, value: ${this.value}`);
+          // Remove leading zeros if value is not just "0"
+          if (this.value !== "0" && this.value.startsWith("0")) {
+            this.value = this.value.replace(/^0+/, '');
+            console.log(`  Removed leading zeros, new value: ${this.value}`);
+          }
           // Recalculate totals when shares change
+          console.log(`  Calling updateTotals()`);
           updateTotals();
         });
       }
@@ -384,20 +515,139 @@ function initializeTable() {
   updateTableCells();
 }
 
+// Function to handle number input with leading zero removal
+function handleNumberInput(event) {
+  // Remove leading zeros if value is not just "0"
+  if (this.value !== "0" && this.value.startsWith("0")) {
+    this.value = this.value.replace(/^0+/, '');
+  }
+  calculateTaxes();
+}
+
 // Add event listeners
-incomeTaxRateInput.addEventListener('input', calculateTaxes);
-ltcgRateInput.addEventListener('input', calculateTaxes);
-strikePriceInput.addEventListener('input', calculateTaxes);
-exercisePriceInput.addEventListener('input', calculateTaxes);
-salePriceInput.addEventListener('input', calculateTaxes);
+incomeTaxRateInput.addEventListener('input', handleNumberInput);
+ltcgRateInput.addEventListener('input', handleNumberInput);
+strikePriceInput.addEventListener('input', handleNumberInput);
+exercisePriceInput.addEventListener('input', handleNumberInput);
+salePriceInput.addEventListener('input', handleNumberInput);
 
 // Add event listeners for match radio buttons
 matchRadios.forEach(radio => {
   radio.addEventListener('change', calculateTaxes);
 });
 
+// Function to directly attach event listeners to all shares inputs
+function attachSharesInputListeners() {
+  console.log('Attaching event listeners to all shares inputs');
+  
+  // First, get all share inputs directly to ensure we find all of them
+  const allInputs = document.querySelectorAll('input.shares-input');
+  console.log(`Found ${allInputs.length} share inputs total`);
+  
+  // Clear existing IDs and data attributes
+  allInputs.forEach(input => {
+    if (input.id) input.removeAttribute('id');
+    if (input.hasAttribute('data-row')) input.removeAttribute('data-row');
+  });
+
+  // Initialize counter for each input
+  let inputCounter = 1;
+  
+  // If we found the expected 8 inputs, directly assign them in document order
+  if (allInputs.length === 8) {
+    console.log('Processing inputs by direct index (found 8 inputs)');
+    
+    // Process each input directly instead of through grid cells
+    allInputs.forEach((input, index) => {
+      const rowNum = index + 1; // 1-based row number
+      
+      // Set ID and data attribute
+      input.id = `shares-row-${rowNum}`;
+      input.setAttribute('data-row', rowNum.toString());
+      
+      console.log(`Direct assignment: input ${index+1} → row ${rowNum}`);
+      
+      // Clear existing listeners and add new one
+      const newInput = input.cloneNode(true);
+      input.parentNode.replaceChild(newInput, input);
+      
+      // Add event listener
+      newInput.addEventListener('input', function() {
+        console.log(`Input changed for row ${rowNum}, value: ${this.value}`);
+        
+        // Remove leading zeros if value is not just "0"
+        if (this.value !== "0" && this.value.startsWith("0")) {
+          this.value = this.value.replace(/^0+/, '');
+        }
+        
+        // Recalculate totals when shares change
+        updateTotals();
+      });
+    });
+  } 
+  // Fallback to cell-by-cell assignment if we don't have exactly 8 inputs
+  else {
+    console.log('Fallback: processing inputs by grid cell indices');
+    
+    // These are the expected indices for the 8 data rows
+    const expectedCellIndices = [15, 23, 31, 39, 47, 55, 63, 71];
+    
+    // Get all grid cells
+    const cells = document.querySelectorAll('.grid-cell');
+    
+    // Process each expected cell index
+    expectedCellIndices.forEach((cellIndex, index) => {
+      // Calculate row number (1-based)
+      const rowNum = index + 1;
+      
+      if (cellIndex >= cells.length) {
+        console.error(`Cell index ${cellIndex} out of bounds`);
+        return;
+      }
+      
+      const cell = cells[cellIndex];
+      const input = cell.querySelector('input.shares-input');
+      
+      if (!input) {
+        console.error(`No input found at cell index ${cellIndex}`);
+        return;
+      }
+      
+      // Set ID and data attribute
+      input.id = `shares-row-${rowNum}`;
+      input.setAttribute('data-row', rowNum.toString());
+      
+      console.log(`Cell index assignment: cell ${cellIndex} → row ${rowNum}`);
+      
+      // Clear existing listeners and add new one
+      const newInput = input.cloneNode(true);
+      input.parentNode.replaceChild(newInput, input);
+      
+      // Add event listener
+      newInput.addEventListener('input', function() {
+        console.log(`Input changed for row ${rowNum}, value: ${this.value}`);
+        
+        // Remove leading zeros if value is not just "0"
+        if (this.value !== "0" && this.value.startsWith("0")) {
+          this.value = this.value.replace(/^0+/, '');
+        }
+        
+        // Recalculate totals when shares change
+        updateTotals();
+      });
+    });
+  }
+  
+  // Verify all inputs were set up correctly
+  console.log("Verification of share inputs after setup:");
+  document.querySelectorAll('input.shares-input').forEach((input, i) => {
+    console.log(`Input ${i+1}: id=${input.id}, data-row=${input.getAttribute('data-row')}, value=${input.value}`);
+  });
+}
+
 // Initialize table and calculate on page load
 window.addEventListener('DOMContentLoaded', function() {
   initializeTable();
+  attachSharesInputListeners(); // Directly attach listeners
   calculateTaxes();
 });
