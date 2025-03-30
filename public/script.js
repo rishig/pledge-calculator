@@ -73,12 +73,22 @@ function calculateFormulaValue(formula) {
     result = incomeTaxRate * sprain;
   } else if (formula === '(1 - income tax) * sprain') {
     result = (1 - incomeTaxRate) * sprain;
+  } else if (formula === '(1 - income tax) * sprain * income tax') {
+    result = (1 - incomeTaxRate) * sprain * incomeTaxRate;
+  } else if (formula === '(1 - income tax) * sprain * (1 + match)') {
+    result = (1 - incomeTaxRate) * sprain * (1 + getMatchMultiplier());
   } else if (formula === 'sale price') {
     result = salePrice;
+  } else if (formula === 'sale price * income tax') {
+    result = salePrice * incomeTaxRate;
+  } else if (formula === 'sale price * (1 + match)') {
+    result = salePrice * (1 + getMatchMultiplier());
   } else if (formula === '- strike price - income tax * sprain') {
     result = -strikePrice - incomeTaxRate * sprain;
   } else if (formula === 'exercise price') {
     result = exercisePrice;
+  } else if (formula === 'exercise price * income tax') {
+    result = exercisePrice * incomeTaxRate;
   } else if (formula === 'ltcg * sprain') {
     result = ltcgRate * sprain;
   } else if (formula === '(1 - ltcg) * sprain') {
@@ -121,42 +131,20 @@ function createTableCell(formula, cell) {
   const gain = salePrice - exercisePrice;
   const sprain = salePrice - strikePrice;
   
-  // Check if this is the match column (column 8, index 7)
-  const isMatchColumn = cell && (cell.cellIndex === 7);
-  const matchMultiplier = getMatchMultiplier();
-  
-  // Special handling for match column
-  if (isMatchColumn && formula) {
-    // Hide formula for match column if match is "None"
-    if (matchMultiplier === 0) {
-      return `
-        <div class="formula">${formula}</div>
-        <div class="value">$0</div>
-      `;
-    }
-    
-    // Calculate the base value using the regular formula calculation
-    let baseValue = 0;
-    if (formula === 'sale price') {
-      baseValue = salePrice;
-    } else if (formula === '(1 - income tax) * sprain') {
-      baseValue = (1 - incomeTaxRate) * sprain;
-    } else {
-      // For other formulas, calculate normally
-      baseValue = calculateFormulaValue(formula);
-    }
-    
-    // Apply the match multiplier to the base value
-    const matchedValue = baseValue * matchMultiplier;
-    
-    return `
-      <div class="formula">${matchMultiplier}:1 match</div>
-      <div class="value">${formatCurrency(multiplyByNumShares(matchedValue))}</div>
-    `;
-  }
+  // No need for special match column handling as it's been removed
   
   // Handle special cases based on the specific formula text
-  if (formula === 'sale price') {
+  // Get the match multiplier for charity calculations
+  const matchMultiplier = getMatchMultiplier();
+
+  // Handle sale price with match multiplier  
+  if (formula === 'sale price * (1 + match)') {
+    const value = salePrice * (1 + matchMultiplier);
+    return `
+      <div class="formula">${formula}</div>
+      <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
+    `;
+  } else if (formula === 'sale price') {
     return `
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(multiplyByNumShares(salePrice))}</div>
@@ -203,14 +191,14 @@ function createTableCell(formula, cell) {
 function updateTableCells() {
   // Get all formula cells
   const cells = document.querySelectorAll('.grid-cell');
-  const rowSize = 8; // 8 columns per row
+  const rowSize = 7; // 7 columns per row
   
   // Update all cells that have formulas
   cells.forEach((cell, index) => {
     const row = Math.floor(index / rowSize);
     const col = index % rowSize;
     
-    // Only update columns 4-8 (indices 3-7) which contain formulas
+    // Only update columns 4-7 (indices 3-6) which contain formulas
     if (col >= 3) {
       const formula = cell.getAttribute('data-formula');
       if (formula) {
@@ -243,19 +231,19 @@ function calculateTaxes() {
   let resultsHTML = `
     <div style="display: flex; gap: 30px; flex-wrap: wrap;">
       <div>
-        <div style="font-weight: 500;">Spread: ${formatCurrency(spreadWithShares)}</div>
+        <div style="font-weight: 500;">Spread: ${formatCurrency(spread)}</div>
         <div class="description">
           exercise price - strike price
         </div>
       </div>
       <div>
-        <div style="font-weight: 500;">Gain: ${formatCurrency(gainWithShares)}</div>
+        <div style="font-weight: 500;">Gain: ${formatCurrency(gain)}</div>
         <div class="description">
           sale price - exercise price
         </div>
       </div>
       <div>
-        <div style="font-weight: 500;">Sprain: ${formatCurrency(sprainWithShares)}</div>
+        <div style="font-weight: 500;">Sprain: ${formatCurrency(sprain)}</div>
         <div class="description">
           sale price - strike price<br>
           (or spread + gain)
@@ -275,7 +263,7 @@ function calculateTaxes() {
 function initializeTable() {
   // Get all formula cells - these are all grid cells after the header row
   const cells = document.querySelectorAll('.grid-cell');
-  const rowSize = 8; // 8 columns per row
+  const rowSize = 7; // 7 columns per row
   
   // Process all cells using their row and column position
   cells.forEach((cell, index) => {

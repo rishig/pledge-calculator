@@ -99,8 +99,7 @@ strong {
     minmax(150px, 1.5fr) /* Government gets */
     minmax(150px, 1.5fr) /* Charity gets */
     minmax(150px, 1.5fr) /* You get in cash */
-    minmax(150px, 1.5fr) /* You get in tax deduction */
-    minmax(100px, 1fr);  /* Anthropic match */
+    minmax(150px, 1.5fr); /* You get in tax deduction */
   gap: 1px;
   border: 1px solid #ddd;
   background-color: #ddd; /* Grid gap color */
@@ -133,14 +132,13 @@ strong {
   color: #333;
 }
 
-.grid-cell:nth-child(16n+1),
-.grid-cell:nth-child(16n+2),
-.grid-cell:nth-child(16n+3),
-.grid-cell:nth-child(16n+4),
-.grid-cell:nth-child(16n+5),
-.grid-cell:nth-child(16n+6),
-.grid-cell:nth-child(16n+7),
-.grid-cell:nth-child(16n+8) {
+.grid-cell:nth-child(14n+1),
+.grid-cell:nth-child(14n+2),
+.grid-cell:nth-child(14n+3),
+.grid-cell:nth-child(14n+4),
+.grid-cell:nth-child(14n+5),
+.grid-cell:nth-child(14n+6),
+.grid-cell:nth-child(14n+7) {
   background-color: #f9f9f9;
 }
 

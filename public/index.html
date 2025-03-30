@@ -121,7 +121,7 @@
             <div class="label-container">
               <label style="font-weight: 500;">Number of shares</label>
               <div class="description">
-                Multiply all values in the table by this number.
+                Multiplies all values in the table by this number.
               </div>
             </div>
             <div class="input-group">
@@ -160,7 +160,6 @@
               <div class="grid-header">Charity gets</div>
               <div class="grid-header">You get in cash</div>
               <div class="grid-header">You get in tax deduction</div>
-              <div class="grid-header">Match<br>(if 1:1)</div>
               
               <!-- Row 1 -->
               <div class="grid-cell">ISO or NSO</div>
@@ -170,17 +169,15 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * sprain</div>
               <div class="grid-cell"></div>
-              <div class="grid-cell"></div>
               
               <!-- Row 2 -->
               <div class="grid-cell">ISO or NSO</div>
               <div class="grid-cell">Cashless exercise during liquidity</div>
               <div class="grid-cell">Donate</div>
               <div class="grid-cell">income tax * sprain</div>
-              <div class="grid-cell">(1 - income tax) * sprain</div>
+              <div class="grid-cell">(1 - income tax) * sprain * (1 + match)</div>
               <div class="grid-cell"></div>
-              <div class="grid-cell">(1 - income tax) * sprain</div>
-              <div class="grid-cell">(1 - income tax) * sprain</div>
+              <div class="grid-cell">(1 - income tax) * sprain * income tax</div>
               
               <!-- Row 3 -->
               <div class="grid-cell">ISO or NSO</div>
@@ -190,17 +187,15 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * sprain</div>
               <div class="grid-cell"></div>
-              <div class="grid-cell"></div>
               
               <!-- Row 4 -->
               <div class="grid-cell">ISO or NSO</div>
               <div class="grid-cell">Dispose &lt;1 yr after exercise</div>
               <div class="grid-cell">Donate</div>
               <div class="grid-cell">income tax * sprain</div>
-              <div class="grid-cell">sale price</div>
+              <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price - income tax * sprain</div>
-              <div class="grid-cell">exercise price</div>
-              <div class="grid-cell">sale price</div>
+              <div class="grid-cell">exercise price * income tax</div>
               
               <!-- Row 5 - ISO Sell -->
               <div class="grid-cell">ISO</div>
@@ -210,17 +205,15 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - ltcg) * sprain</div>
               <div class="grid-cell"></div>
-              <div class="grid-cell"></div>
               
               <!-- Row 6 - ISO Donate -->
               <div class="grid-cell">ISO</div>
               <div class="grid-cell">Dispose 1+ yr after exercise</div>
               <div class="grid-cell">Donate</div>
               <div class="grid-cell">amt * spread</div>
-              <div class="grid-cell">sale price</div>
+              <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price</div>
-              <div class="grid-cell">sale price</div>
-              <div class="grid-cell">sale price</div>
+              <div class="grid-cell">sale price * income tax</div>
               
               <!-- Row 7 - NSO Sell -->
               <div class="grid-cell">NSO</div>
@@ -230,17 +223,15 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * spread + (1 - ltcg) * gain</div>
               <div class="grid-cell"></div>
-              <div class="grid-cell"></div>
               
               <!-- Row 8 - NSO Donate -->
               <div class="grid-cell">NSO</div>
               <div class="grid-cell">Dispose 1+ yr after exercise</div>
               <div class="grid-cell">Donate</div>
               <div class="grid-cell">income tax * spread</div>
-              <div class="grid-cell">sale price</div>
+              <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price - income tax * spread</div>
-              <div class="grid-cell">sale price</div>
-              <div class="grid-cell">sale price</div>
+              <div class="grid-cell">sale price * income tax</div>
             </div>
           </div>
         </div>
