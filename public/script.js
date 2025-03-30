@@ -4,7 +4,6 @@ const ltcgRateInput = document.getElementById('ltcgRate');
 const strikePriceInput = document.getElementById('strikePrice');
 const exercisePriceInput = document.getElementById('exercisePrice');
 const salePriceInput = document.getElementById('salePrice');
-const numSharesInput = document.getElementById('numShares');
 const matchRadios = document.querySelectorAll('input[name="match"]');
 const resultsElement = document.getElementById('results');
 
@@ -30,18 +29,19 @@ function getMatchMultiplier() {
   }
 }
 
-// Function to multiply by number of shares and round appropriately
-function multiplyByNumShares(amount) {
-  const numShares = parseInputAsNumber(numSharesInput);
-  const result = amount * numShares;
+// Function to format numbers appropriately (previously multiplyByNumShares)
+function formatNumber(amount) {
+  // Round to nearest cent
+  return Math.round(amount * 100) / 100;
+}
+
+// Function to get row share count
+function getRowShares(rowIndex) {
+  const input = document.querySelector(`#shares-row-${rowIndex}`);
+  if (!input) return 0;
   
-  if (numShares > 1) {
-    // Round to nearest dollar if more than 1 share
-    return Math.round(result);
-  } else {
-    // Round to nearest cent if just 1 share
-    return Math.round(result * 100) / 100;
-  }
+  const value = parseFloat(input.value);
+  return isNaN(value) ? 0 : value;
 }
 
 // Function to format currency
@@ -110,7 +110,7 @@ function calculateFormulaValue(formula) {
     result = -strikePrice - incomeTaxRate * spread;
   }
   
-  return multiplyByNumShares(result);
+  return formatNumber(result);
 }
 
 // Create HTML for a table cell with both formula and calculated value
@@ -142,12 +142,12 @@ function createTableCell(formula, cell) {
     const value = salePrice * (1 + matchMultiplier);
     return `
       <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
+      <div class="value">${formatCurrency(formatNumber(value))}</div>
     `;
   } else if (formula === 'sale price') {
     return `
       <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(multiplyByNumShares(salePrice))}</div>
+      <div class="value">${formatCurrency(formatNumber(salePrice))}</div>
     `;
   } else if (formula === '0') {
     return `
@@ -160,7 +160,7 @@ function createTableCell(formula, cell) {
     
     return `
       <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
+      <div class="value">${formatCurrency(formatNumber(value))}</div>
     `;
   } else if (formula === '- strike price - income tax * sprain') {
     // This should be just the negative of strike price minus income tax * sprain
@@ -168,7 +168,7 @@ function createTableCell(formula, cell) {
     
     return `
       <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
+      <div class="value">${formatCurrency(formatNumber(value))}</div>
     `;
   } else if (formula === '- strike price - income tax * spread') {
     // This should be just the negative of strike price minus income tax * spread
@@ -176,7 +176,7 @@ function createTableCell(formula, cell) {
     
     return `
       <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
+      <div class="value">${formatCurrency(formatNumber(value))}</div>
     `;
   } else {
     // Standard formula
@@ -187,11 +187,43 @@ function createTableCell(formula, cell) {
   }
 }
 
+// Calculate value for a specific cell (row, column) with shares
+function calculateCellValue(row, col) {
+  // Calculate the index in the flat array of cells
+  const rowSize = 8;
+  const index = row * rowSize + col;
+  
+  // Find the cell
+  const cells = document.querySelectorAll('.grid-cell');
+  if (index >= cells.length) return 0;
+  
+  const cell = cells[index];
+  const formula = cell.getAttribute('data-formula');
+  
+  if (!formula) return 0;
+  
+  // Get the value by parsing the formula
+  let value = 0;
+  
+  if (formula) {
+    // Use the existing calculation function
+    value = calculateFormulaValue(formula);
+  }
+  
+  // Multiply by number of shares for this row
+  const shares = getRowShares(row);
+  
+  // If shares is 0, return 0
+  if (shares === 0) return 0;
+  
+  return value * shares;
+}
+
 // Update all table cells with calculated values
 function updateTableCells() {
   // Get all formula cells
   const cells = document.querySelectorAll('.grid-cell');
-  const rowSize = 7; // 7 columns per row
+  const rowSize = 8; // 8 columns per row
   
   // Update all cells that have formulas
   cells.forEach((cell, index) => {
@@ -199,13 +231,66 @@ function updateTableCells() {
     const col = index % rowSize;
     
     // Only update columns 4-7 (indices 3-6) which contain formulas
-    if (col >= 3) {
+    // Skip column 8 (index 7) which contains input boxes
+    if (col >= 3 && col < 7) {
       const formula = cell.getAttribute('data-formula');
       if (formula) {
         cell.innerHTML = createTableCell(formula, cell);
       }
     }
   });
+  
+  // Update totals
+  updateTotals();
+}
+
+// Function to format total values (show blank for zero)
+function formatTotalValue(value) {
+  if (value === 0) return '';
+  return `<div class="value">${formatCurrency(value)}</div>`;
+}
+
+// Update the totals row
+function updateTotals() {
+  // Calculate totals for columns 4-7 (indices 3-6)
+  const totalGov = document.getElementById('total-gov');
+  const totalCharity = document.getElementById('total-charity');
+  const totalCash = document.getElementById('total-cash');
+  const totalDeduction = document.getElementById('total-deduction');
+  const totalShares = document.getElementById('total-shares');
+  
+  // Find number of rows (excluding header and totals rows)
+  const numRows = 8; // We know there are 8 rows of data
+  
+  // Initialize totals
+  let govTotal = 0;
+  let charityTotal = 0;
+  let cashTotal = 0;
+  let deductionTotal = 0;
+  let sharesTotal = 0;
+  
+  // Sum up each column (multiply by shares)
+  for (let row = 1; row <= numRows; row++) { // Start at 1 to include the first data row
+    // Get shares for this row
+    const shares = getRowShares(row);
+    sharesTotal += shares;
+    
+    // Add values multiplied by shares
+    govTotal += calculateCellValue(row, 3);      // Government gets
+    charityTotal += calculateCellValue(row, 4);  // Charity gets
+    cashTotal += calculateCellValue(row, 5);     // You get in cash
+    deductionTotal += calculateCellValue(row, 6); // You get in tax deduction
+  }
+  
+  // Display the totals - blank if zero
+  totalGov.innerHTML = formatTotalValue(govTotal);
+  totalCharity.innerHTML = formatTotalValue(charityTotal);
+  totalCash.innerHTML = formatTotalValue(cashTotal);
+  totalDeduction.innerHTML = formatTotalValue(deductionTotal);
+  
+  // Total shares is always displayed, even if zero
+  totalShares.innerHTML = sharesTotal > 0 ? 
+    `<div class="shares-total-container"><div class="shares-total-value">${sharesTotal}</div></div>` : '';
 }
 
 // Function to calculate taxes and display results
@@ -222,10 +307,6 @@ function calculateTaxes() {
   const gain = salePrice - exercisePrice;
   const sprain = salePrice - strikePrice;
   
-  // Apply number of shares
-  const spreadWithShares = multiplyByNumShares(spread);
-  const gainWithShares = multiplyByNumShares(gain);
-  const sprainWithShares = multiplyByNumShares(sprain);
   
   // Create results HTML - simplified to one line with definitions
   let resultsHTML = `
@@ -263,15 +344,15 @@ function calculateTaxes() {
 function initializeTable() {
   // Get all formula cells - these are all grid cells after the header row
   const cells = document.querySelectorAll('.grid-cell');
-  const rowSize = 7; // 7 columns per row
+  const rowSize = 8; // 8 columns per row
   
   // Process all cells using their row and column position
   cells.forEach((cell, index) => {
     const row = Math.floor(index / rowSize);
     const col = index % rowSize;
     
-    // Only process columns 4-8 (indices 3-7) which have formulas
-    if (col >= 3) {
+    // Process columns 4-7 (indices 3-6) which have formulas
+    if (col >= 3 && col < 7) {
       // Store original formula text as a data attribute
       const formula = cell.textContent.trim();
       if (formula) {
@@ -279,6 +360,22 @@ function initializeTable() {
       } else {
         // For empty cells, set formula to empty string
         cell.setAttribute('data-formula', '');
+      }
+    }
+    
+    // Process column 8 (index 7) for share inputs
+    if (col === 7) {
+      // Find the input element within this cell
+      const input = cell.querySelector('input.shares-input');
+      if (input) {
+        // Set a unique ID based on the row
+        input.id = `shares-row-${row}`;
+        
+        // Add event listener to handle input changes
+        input.addEventListener('input', function() {
+          // Recalculate totals when shares change
+          updateTotals();
+        });
       }
     }
   });
@@ -293,9 +390,6 @@ ltcgRateInput.addEventListener('input', calculateTaxes);
 strikePriceInput.addEventListener('input', calculateTaxes);
 exercisePriceInput.addEventListener('input', calculateTaxes);
 salePriceInput.addEventListener('input', calculateTaxes);
-if (numSharesInput) {
-  numSharesInput.addEventListener('input', calculateTaxes);
-}
 
 // Add event listeners for match radio buttons
 matchRadios.forEach(radio => {

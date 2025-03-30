@@ -74,7 +74,7 @@
             <div class="label-container">
               <label style="font-weight: 500;">Exercise price</label>
               <div class="description">
-                The 409a valuation at the time of exercise (which is at least 1 year after you got your offer letter).
+                The 409a valuation at the time of exercise (which is at least 1 year after you started working).
               </div>
             </div>
             <div class="input-group">
@@ -117,21 +117,6 @@
         <div style="margin-bottom: 30px;">
           <h2>Stock Options: Compare Your Options</h2>
           
-          <div class="field-container" style="margin-bottom: 20px;">
-            <div class="label-container">
-              <label style="font-weight: 500;">Number of shares</label>
-              <div class="description">
-                Multiplies all values in the table by this number.
-              </div>
-            </div>
-            <div class="input-group">
-              <input 
-                type="text" 
-                id="numShares"
-                value="1"
-              />
-            </div>
-          </div>
           
           <div class="field-container" style="margin-bottom: 20px;">
             <div class="label-container">
@@ -160,6 +145,7 @@
               <div class="grid-header">Charity gets</div>
               <div class="grid-header">You get in cash</div>
               <div class="grid-header">You get in tax deduction</div>
+              <div class="grid-header"># of shares</div>
               
               <!-- Row 1 -->
               <div class="grid-cell">ISO or NSO</div>
@@ -169,6 +155,7 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * sprain</div>
               <div class="grid-cell"></div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 2 -->
               <div class="grid-cell">ISO or NSO</div>
@@ -178,6 +165,7 @@
               <div class="grid-cell">(1 - income tax) * sprain * (1 + match)</div>
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * sprain * income tax</div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 3 -->
               <div class="grid-cell">ISO or NSO</div>
@@ -187,6 +175,7 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * sprain</div>
               <div class="grid-cell"></div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 4 -->
               <div class="grid-cell">ISO or NSO</div>
@@ -196,6 +185,7 @@
               <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price - income tax * sprain</div>
               <div class="grid-cell">exercise price * income tax</div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 5 - ISO Sell -->
               <div class="grid-cell">ISO</div>
@@ -205,6 +195,7 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - ltcg) * sprain</div>
               <div class="grid-cell"></div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 6 - ISO Donate -->
               <div class="grid-cell">ISO</div>
@@ -214,6 +205,7 @@
               <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price</div>
               <div class="grid-cell">sale price * income tax</div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 7 - NSO Sell -->
               <div class="grid-cell">NSO</div>
@@ -223,6 +215,7 @@
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - income tax) * spread + (1 - ltcg) * gain</div>
               <div class="grid-cell"></div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 8 - NSO Donate -->
               <div class="grid-cell">NSO</div>
@@ -232,6 +225,17 @@
               <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price - income tax * spread</div>
               <div class="grid-cell">sale price * income tax</div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
+              
+              <!-- Totals Row -->
+              <div class="grid-cell totals-cell">Totals</div>
+              <div class="grid-cell totals-cell"></div>
+              <div class="grid-cell totals-cell"></div>
+              <div class="grid-cell totals-cell" id="total-gov"></div>
+              <div class="grid-cell totals-cell" id="total-charity"></div>
+              <div class="grid-cell totals-cell" id="total-cash"></div>
+              <div class="grid-cell totals-cell" id="total-deduction"></div>
+              <div class="grid-cell totals-cell" id="total-shares"></div>
             </div>
           </div>
         </div>
