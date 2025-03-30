@@ -19,7 +19,7 @@
             <div class="label-container">
               <label style="font-weight: 500;">Income tax</label>
               <div class="description">
-                For simplification, going to pretend short term capital gains are taxed identically to income. 
+                For simplification, I'm going to pretend short term capital gains are taxed identically to income. 
                 If you're calculating this at home, remember to include NIIT for capital gains and payroll taxes for income.
               </div>
             </div>
@@ -133,6 +133,23 @@
             </div>
           </div>
           
+          <div class="field-container" style="margin-bottom: 20px;">
+            <div class="label-container">
+              <label style="font-weight: 500;">Match</label>
+            </div>
+            <div class="input-group" style="display: flex; gap: 15px; width: auto;">
+              <label style="display: flex; align-items: center; gap: 4px;">
+                <input type="radio" name="match" value="none" checked> None
+              </label>
+              <label style="display: flex; align-items: center; gap: 4px;">
+                <input type="radio" name="match" value="1:1"> 1:1
+              </label>
+              <label style="display: flex; align-items: center; gap: 4px;">
+                <input type="radio" name="match" value="3:1"> 3:1
+              </label>
+            </div>
+          </div>
+          
           <div class="grid-table-container">
             <div class="grid-table">
               <!-- Table Header -->
@@ -189,7 +206,7 @@
               <div class="grid-cell">ISO</div>
               <div class="grid-cell">Dispose 1+ yr after exercise</div>
               <div class="grid-cell">Sell</div>
-              <div class="grid-cell">ltcg tax * sprain</div>
+              <div class="grid-cell">ltcg * sprain</div>
               <div class="grid-cell"></div>
               <div class="grid-cell">(1 - ltcg) * sprain</div>
               <div class="grid-cell"></div>

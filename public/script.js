@@ -5,12 +5,29 @@ const strikePriceInput = document.getElementById('strikePrice');
 const exercisePriceInput = document.getElementById('exercisePrice');
 const salePriceInput = document.getElementById('salePrice');
 const numSharesInput = document.getElementById('numShares');
+const matchRadios = document.querySelectorAll('input[name="match"]');
 const resultsElement = document.getElementById('results');
 
 // Function to parse input as a number
 function parseInputAsNumber(input) {
   const value = input.value.trim();
   return value === '' ? 0 : parseFloat(value);
+}
+
+// Function to get the current match value
+function getMatchMultiplier() {
+  // Find the checked radio button
+  const checkedRadio = Array.from(matchRadios).find(radio => radio.checked);
+  
+  if (!checkedRadio) return 0; // Default to 0 if none found
+  
+  if (checkedRadio.value === '1:1') {
+    return 1; // 1:1 match
+  } else if (checkedRadio.value === '3:1') {
+    return 3; // 3:1 match
+  } else {
+    return 0; // No match
+  }
 }
 
 // Function to multiply by number of shares and round appropriately
@@ -62,7 +79,7 @@ function calculateFormulaValue(formula) {
     result = -strikePrice - incomeTaxRate * sprain;
   } else if (formula === 'exercise price') {
     result = exercisePrice;
-  } else if (formula === 'ltcg tax * sprain') {
+  } else if (formula === 'ltcg * sprain') {
     result = ltcgRate * sprain;
   } else if (formula === '(1 - ltcg) * sprain') {
     result = (1 - ltcgRate) * sprain;
@@ -70,6 +87,7 @@ function calculateFormulaValue(formula) {
     // Assume AMT is some percentage (using income tax for simplicity)
     result = incomeTaxRate * spread;
   } else if (formula === '- strike price') {
+    // Just the negative of the strike price
     result = -strikePrice;
   } else if (formula === 'income tax * spread + ltcg * gain') {
     result = incomeTaxRate * spread + ltcgRate * gain;
@@ -78,6 +96,7 @@ function calculateFormulaValue(formula) {
   } else if (formula === 'income tax * spread') {
     result = incomeTaxRate * spread;
   } else if (formula === '- strike price - income tax * spread') {
+    // Negative of strike price minus income tax * spread
     result = -strikePrice - incomeTaxRate * spread;
   }
   
@@ -85,7 +104,7 @@ function calculateFormulaValue(formula) {
 }
 
 // Create HTML for a table cell with both formula and calculated value
-function createTableCell(formula) {
+function createTableCell(formula, cell) {
   if (!formula || formula.trim() === '') {
     return '';
   }
@@ -102,6 +121,40 @@ function createTableCell(formula) {
   const gain = salePrice - exercisePrice;
   const sprain = salePrice - strikePrice;
   
+  // Check if this is the match column (column 8, index 7)
+  const isMatchColumn = cell && (cell.cellIndex === 7);
+  const matchMultiplier = getMatchMultiplier();
+  
+  // Special handling for match column
+  if (isMatchColumn && formula) {
+    // Hide formula for match column if match is "None"
+    if (matchMultiplier === 0) {
+      return `
+        <div class="formula">${formula}</div>
+        <div class="value">$0</div>
+      `;
+    }
+    
+    // Calculate the base value using the regular formula calculation
+    let baseValue = 0;
+    if (formula === 'sale price') {
+      baseValue = salePrice;
+    } else if (formula === '(1 - income tax) * sprain') {
+      baseValue = (1 - incomeTaxRate) * sprain;
+    } else {
+      // For other formulas, calculate normally
+      baseValue = calculateFormulaValue(formula);
+    }
+    
+    // Apply the match multiplier to the base value
+    const matchedValue = baseValue * matchMultiplier;
+    
+    return `
+      <div class="formula">${matchMultiplier}:1 match</div>
+      <div class="value">${formatCurrency(multiplyByNumShares(matchedValue))}</div>
+    `;
+  }
+  
   // Handle special cases based on the specific formula text
   if (formula === 'sale price') {
     return `
@@ -114,27 +167,24 @@ function createTableCell(formula) {
       <div class="value">${formatCurrency(0)}</div>
     `;
   } else if (formula === '- strike price') {
-    // For row 6, charity gets "Sale price - strike price"
-    // but the formula is shown as "- strike price"
-    const value = salePrice - strikePrice;
+    // This is just the negative of the strike price
+    const value = -strikePrice;
     
     return `
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
     `;
   } else if (formula === '- strike price - income tax * sprain') {
-    // The formula is "sale price - strike price - income tax * sprain"
-    // But written as "- strike price - income tax * sprain" with sale price implied
-    const value = salePrice - strikePrice - incomeTaxRate * sprain;
+    // This should be just the negative of strike price minus income tax * sprain
+    const value = -strikePrice - incomeTaxRate * sprain;
     
     return `
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(multiplyByNumShares(value))}</div>
     `;
   } else if (formula === '- strike price - income tax * spread') {
-    // The formula is "sale price - strike price - income tax * spread"
-    // But written as "- strike price - income tax * spread" with sale price implied
-    const value = salePrice - strikePrice - incomeTaxRate * spread;
+    // This should be just the negative of strike price minus income tax * spread
+    const value = -strikePrice - incomeTaxRate * spread;
     
     return `
       <div class="formula">${formula}</div>
@@ -164,7 +214,7 @@ function updateTableCells() {
     if (col >= 3) {
       const formula = cell.getAttribute('data-formula');
       if (formula) {
-        cell.innerHTML = createTableCell(formula);
+        cell.innerHTML = createTableCell(formula, cell);
       }
     }
   });
@@ -193,19 +243,19 @@ function calculateTaxes() {
   let resultsHTML = `
     <div style="display: flex; gap: 30px; flex-wrap: wrap;">
       <div>
-        <div style="font-weight: 500;">spread: ${formatCurrency(spreadWithShares)}</div>
+        <div style="font-weight: 500;">Spread: ${formatCurrency(spreadWithShares)}</div>
         <div class="description">
           exercise price - strike price
         </div>
       </div>
       <div>
-        <div style="font-weight: 500;">gain: ${formatCurrency(gainWithShares)}</div>
+        <div style="font-weight: 500;">Gain: ${formatCurrency(gainWithShares)}</div>
         <div class="description">
           sale price - exercise price
         </div>
       </div>
       <div>
-        <div style="font-weight: 500;">sprain: ${formatCurrency(sprainWithShares)}</div>
+        <div style="font-weight: 500;">Sprain: ${formatCurrency(sprainWithShares)}</div>
         <div class="description">
           sale price - strike price<br>
           (or spread + gain)
@@ -258,6 +308,11 @@ salePriceInput.addEventListener('input', calculateTaxes);
 if (numSharesInput) {
   numSharesInput.addEventListener('input', calculateTaxes);
 }
+
+// Add event listeners for match radio buttons
+matchRadios.forEach(radio => {
+  radio.addEventListener('change', calculateTaxes);
+});
 
 // Initialize table and calculate on page load
 window.addEventListener('DOMContentLoaded', function() {
