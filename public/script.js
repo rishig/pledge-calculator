@@ -358,19 +358,29 @@ function updateTotals() {
   totalGov.innerHTML = formatTotalValue(govTotal);
   totalCharity.innerHTML = formatTotalValue(charityTotal);
   totalCash.innerHTML = formatTotalValue(cashTotal);
-  totalDeduction.innerHTML = formatTotalValue(deductionTotal);
+  
+  // Add [3] to the tax deduction total if there's a value
+  if (deductionTotal > 0) {
+    totalDeduction.innerHTML = `<div class="value">${formatCurrency(deductionTotal)} <a href="#notes" style="color: inherit; text-decoration: none;">[3]</a></div>`;
+  } else {
+    totalDeduction.innerHTML = '';
+  }
   
   // Total shares is always displayed, even if zero
   totalShares.innerHTML = sharesTotal > 0 ? 
     `<div class="shares-total-container"><div class="shares-total-value">${sharesTotal}</div></div>` : '';
     
   // Calculate and display totals for charity and for the user
-  // Total to charity is the charity column
-  totalToCharityElement.textContent = charityTotal > 0 ? formatCurrency(charityTotal) : '$0';
+  // Total to charity is the charity column (rounded down to nearest dollar)
+  const roundedCharityTotal = Math.floor(charityTotal);
+  totalToCharityElement.textContent = roundedCharityTotal > 0 ? `$${roundedCharityTotal.toLocaleString()}` : '$0';
   
   // Total to you is the cash + tax deduction 
   const totalToYou = cashTotal + deductionTotal;
-  totalToYouElement.textContent = totalToYou > 0 ? formatCurrency(totalToYou) : '$0';
+  
+  // Display the total to you rounded down to the nearest dollar
+  const roundedTotalToYou = Math.floor(totalToYou);
+  totalToYouElement.textContent = roundedTotalToYou > 0 ? `$${roundedTotalToYou.toLocaleString()}` : '$0';
 }
 
 // Function to calculate taxes and display results
