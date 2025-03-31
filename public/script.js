@@ -138,9 +138,9 @@ function calculateFormulaValue(formula) {
     result = ltcgRate * sprain;
   } else if (formula === '(1 - ltcg) * sprain') {
     result = (1 - ltcgRate) * sprain;
-  } else if (formula === 'amt * spread') {
+  } else if (formula.startsWith('amt * spread')) {
     // Assume AMT is some percentage (using income tax for simplicity)
-    result = incomeTaxRate * spread;
+    result = 0.35 * spread;
   } else if (formula === '- strike price') {
     // Just the negative of the strike price
     result = -strikePrice;
@@ -335,7 +335,7 @@ function updateTotals() {
     govTotal += govValue;         // Government gets
     charityTotal += charityValue; // Charity gets
     cashTotal += cashValue;       // You get in cash
-    deductionTotal += deductionValue; // You get in tax deduction
+    deductionTotal += deductionValue; // You get via tax deduction
   }
   
   // Display the totals - blank if zero

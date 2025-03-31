@@ -109,7 +109,7 @@ strong {
     minmax(150px, 1.5fr) /* Government gets */
     minmax(150px, 1.5fr) /* Charity gets */
     minmax(150px, 1.5fr) /* You get in cash */
-    minmax(150px, 1.5fr) /* You get in tax deduction */
+    minmax(150px, 1.5fr) /* You get via tax deduction */
     minmax(100px, 1fr);  /* # of shares */
   gap: 1px;
   border: 1px solid #ddd;
