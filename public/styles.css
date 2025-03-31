@@ -104,8 +104,8 @@ strong {
   display: grid;
   grid-template-columns: 
     minmax(100px, 1fr)   /* Option type */
-    minmax(180px, 1.5fr) /* Holding period */
-    minmax(100px, 1fr)   /* Disposal Method */
+    minmax(150px, 1.5fr) /* Holding period */
+    minmax(80px, 1fr)   /* Disposal Method */
     minmax(150px, 1.5fr) /* Government gets */
     minmax(150px, 1.5fr) /* Charity gets */
     minmax(150px, 1.5fr) /* You get in cash */
@@ -114,7 +114,7 @@ strong {
   gap: 1px;
   border: 1px solid #ddd;
   background-color: #ddd; /* Grid gap color */
-  min-width: 1100px;     /* Prevent columns from becoming too narrow */
+  min-width: 800px;     /* Prevent columns from becoming too narrow */
 }
 
 .grid-header {
@@ -159,6 +159,8 @@ strong {
   display: block;
   padding-left: 8px;
 }
+
+/* Remove unused classes */
 
 /* Align the shares total with the input boxes */
 .shares-total-container {

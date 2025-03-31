@@ -7,6 +7,8 @@ const salePriceInput = document.getElementById('salePrice');
 const matchRadios = document.querySelectorAll('input[name="match"]');
 const resultsElement = document.getElementById('results');
 const priceWarningElement = document.getElementById('price-warning');
+const totalToCharityElement = document.getElementById('total-to-charity');
+const totalToYouElement = document.getElementById('total-to-you');
 
 // Function to parse input as a number
 function parseInputAsNumber(input) {
@@ -361,6 +363,14 @@ function updateTotals() {
   // Total shares is always displayed, even if zero
   totalShares.innerHTML = sharesTotal > 0 ? 
     `<div class="shares-total-container"><div class="shares-total-value">${sharesTotal}</div></div>` : '';
+    
+  // Calculate and display totals for charity and for the user
+  // Total to charity is the charity column
+  totalToCharityElement.textContent = charityTotal > 0 ? formatCurrency(charityTotal) : '$0';
+  
+  // Total to you is the cash + tax deduction 
+  const totalToYou = cashTotal + deductionTotal;
+  totalToYouElement.textContent = totalToYou > 0 ? formatCurrency(totalToYou) : '$0';
 }
 
 // Function to calculate taxes and display results
@@ -459,10 +469,6 @@ function initializeTable() {
         
         // Add event listener to handle input changes 
         input.addEventListener('input', function() {
-          // Remove leading zeros if value is not just "0"
-          if (this.value !== "0" && this.value.startsWith("0")) {
-            this.value = this.value.replace(/^0+/, '');
-          }
           // Recalculate totals when shares change
           updateTotals();
         });
@@ -474,12 +480,8 @@ function initializeTable() {
   updateTableCells();
 }
 
-// Function to handle number input with leading zero removal
+// Function to handle number input
 function handleNumberInput(event) {
-  // Remove leading zeros if value is not just "0"
-  if (this.value !== "0" && this.value.startsWith("0")) {
-    this.value = this.value.replace(/^0+/, '');
-  }
   calculateTaxes();
 }
 
@@ -522,11 +524,6 @@ function attachSharesInputListeners() {
       
       // Add event listener
       newInput.addEventListener('input', function() {
-        // Remove leading zeros if value is not just "0"
-        if (this.value !== "0" && this.value.startsWith("0")) {
-          this.value = this.value.replace(/^0+/, '');
-        }
-        
         // Recalculate totals when shares change
         updateTotals();
       });
@@ -566,11 +563,6 @@ function attachSharesInputListeners() {
       
       // Add event listener
       newInput.addEventListener('input', function() {
-        // Remove leading zeros if value is not just "0"
-        if (this.value !== "0" && this.value.startsWith("0")) {
-          this.value = this.value.replace(/^0+/, '');
-        }
-        
         // Recalculate totals when shares change
         updateTotals();
       });
