@@ -6,6 +6,7 @@ const exercisePriceInput = document.getElementById('exercisePrice');
 const salePriceInput = document.getElementById('salePrice');
 const matchRadios = document.querySelectorAll('input[name="match"]');
 const resultsElement = document.getElementById('results');
+const priceWarningElement = document.getElementById('price-warning');
 
 // Function to parse input as a number
 function parseInputAsNumber(input) {
@@ -223,6 +224,14 @@ function createTableCell(formula, cell) {
       <div class="formula">${formula}</div>
       <div class="value">${formatCurrency(formatNumber(value))}</div>
     `;
+  } else if (formula.startsWith('amt * spread')) {
+    // Special case for AMT * spread - display in brackets
+    const value = 0.35 * spread; // Using 0.35 as per the formula's definition
+    
+    return `
+      <div class="formula">${formula}</div>
+      <div class="value">[${formatCurrency(formatNumber(value))}]</div>
+    `;
   } else {
     // Standard formula
     return `
@@ -254,6 +263,11 @@ function calculateCellValue(row, col) {
   
   if (!formula) {
     return 0;
+  }
+  
+  // Special case for amt * spread - don't include in totals
+  if (formula.startsWith('amt * spread')) {
+    return 0; // Don't contribute to totals
   }
   
   // Get base value from formula
@@ -388,6 +402,17 @@ function calculateTaxes() {
       </div>
     </div>
   `;
+  
+  // Add warning if sale price is less than exercise price
+  if (salePrice < exercisePrice) {
+    priceWarningElement.innerHTML = `
+      <div style="margin-bottom: 15px; margin-top: 15px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; color: #856404;">
+        <strong>Warning:</strong> There are a number of material considerations when Sale Price &lt; Exercise Price that haven't been incorporated below; consider this unsupported.
+      </div>
+    `;
+  } else {
+    priceWarningElement.innerHTML = ''; // Clear warning if not applicable
+  }
   
   // Update results
   resultsElement.innerHTML = resultsHTML;
