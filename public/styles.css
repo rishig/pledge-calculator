@@ -114,7 +114,7 @@ strong {
   gap: 1px;
   border: 1px solid #ddd;
   background-color: #ddd; /* Grid gap color */
-  min-width: 800px;     /* Prevent columns from becoming too narrow */
+  min-width: 1100px;     /* Prevent columns from becoming too narrow */
 }
 
 .grid-header {
