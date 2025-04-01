@@ -42,7 +42,7 @@ function formatNumber(amount) {
 function getRowShares(rowIndex) {
   // Safety check
   if (rowIndex < 1 || rowIndex > 8) {
-    return 0;
+    throw new Error(`Invalid row index: ${rowIndex}`);
   }
   
   let input = null;
@@ -84,7 +84,7 @@ function getRowShares(rowIndex) {
   
   // If still not found after all attempts
   if (!input) {
-    return 0;
+    throw new Error(`Shares input not found for row ${rowIndex}`);
   }
   
   // Get the value
