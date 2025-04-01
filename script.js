@@ -10,7 +10,7 @@ const priceWarningElement = document.getElementById('price-warning');
 const totalToCharityElement = document.getElementById('total-to-charity');
 const totalToYouElement = document.getElementById('total-to-you');
 
-const rowCount = 8; // Number of rows in the table
+const rowCount = 9; // Number of rows in the table
 
 // Function to parse input as a number
 function parseInputAsNumber(input) {
@@ -126,6 +126,12 @@ function calculateFormulaValue(formula) {
   } else if (formula === '- strike price - income tax * spread') {
     // Negative of strike price minus income tax * spread
     result = -strikePrice - incomeTaxRate * spread;
+  } else if (formula === 'income tax * sale price') {
+    // RSU taxation - income tax on the full sale price
+    result = incomeTaxRate * salePrice;
+  } else if (formula === '(1 - income tax) * sale price') {
+    // RSU after-tax amount
+    result = (1 - incomeTaxRate) * salePrice;
   }
   
   return formatNumber(result);
