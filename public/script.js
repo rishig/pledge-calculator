@@ -94,7 +94,12 @@ function getRowShares(rowIndex) {
   
   // Get the value
   const value = parseFloat(input.value);
-  return isNaN(value) ? 0 : value;
+  if (isNaN(value)) {
+    // Default to 0 if not a number - this will show a useful error in console but not break the app
+    console.error(`Invalid share value for row ${rowIndex}: "${input.value}" is not a number`);
+    return 0;
+  }
+  return value;
 }
 
 // Function to format currency
@@ -254,7 +259,7 @@ function calculateCellValue(row, col) {
   
   // Validate inputs
   if (row < 1 || row > rowCount || col < 0 || col > columnCount - 1) {
-    return 0;
+    throw new Error(`Invalid row or column: row ${row}, col ${col}`);
   }
   
   // Mapping of row/col to cell indices
@@ -264,19 +269,19 @@ function calculateCellValue(row, col) {
   // Find the cell
   const cells = document.querySelectorAll('.grid-cell');
   if (cellIndex >= cells.length) {
-    return 0;
+    throw new Error(`Cell index ${cellIndex} out of bounds (max: ${cells.length - 1})`);
   }
   
   const cell = cells[cellIndex];
   const formula = cell.getAttribute('data-formula');
   
   if (!formula) {
-    return 0;
+    throw new Error(`No formula found for cell at index ${cellIndex}`);
   }
   
   // Special case for amt * spread - don't include in totals
   if (formula.startsWith('amt * spread')) {
-    return 0; // Don't contribute to totals
+    return 0; // This is an intentional exclusion from totals, not a failure
   }
   
   // Get base value from formula
@@ -332,6 +337,10 @@ function updateTotals() {
   const totalDeduction = document.getElementById('total-deduction');
   const totalShares = document.getElementById('total-shares');
   
+  if (!totalGov || !totalCharity || !totalCash || !totalDeduction || !totalShares) {
+    throw new Error('Required total elements not found in the DOM');
+  }
+  
   // Find number of rows (excluding header and totals rows)
   const numRows = rowCount; // Use rowCount constant
   
@@ -377,6 +386,11 @@ function updateTotals() {
   totalShares.innerHTML = sharesTotal > 0 ? 
     `<div class="shares-total-container"><div class="shares-total-value">${sharesTotal}</div></div>` : '';
     
+  // Check if total charity element exists
+  if (!totalToCharityElement || !totalToYouElement) {
+    throw new Error('Summary total elements not found in the DOM');
+  }
+  
   // Calculate and display totals for charity and for the user
   // Total to charity is the charity column (rounded down to nearest dollar)
   const roundedCharityTotal = Math.floor(charityTotal);
@@ -392,6 +406,11 @@ function updateTotals() {
 
 // Function to calculate taxes and display results
 function calculateTaxes() {
+  // Validate required elements exist
+  if (!resultsElement || !priceWarningElement) {
+    throw new Error('Required DOM elements not found');
+  }
+  
   // Get input values
   const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
   const ltcgRate = parseInputAsNumber(ltcgRateInput) / 100;
@@ -399,11 +418,16 @@ function calculateTaxes() {
   const exercisePrice = parseInputAsNumber(exercisePriceInput);
   const salePrice = parseInputAsNumber(salePriceInput);
   
+  // Validate inputs
+  if (isNaN(incomeTaxRate) || isNaN(ltcgRate) || isNaN(strikePrice) || 
+      isNaN(exercisePrice) || isNaN(salePrice)) {
+    throw new Error('Invalid numeric inputs');
+  }
+  
   // Calculate basic values
   const spread = exercisePrice - strikePrice;
   const gain = salePrice - exercisePrice;
   const sprain = salePrice - strikePrice;
-  
   
   // Create results HTML - simplified to one line with definitions
   let resultsHTML = `
