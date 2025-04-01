@@ -47,47 +47,10 @@ function getRowShares(rowIndex) {
     throw new Error(`Invalid row index: ${rowIndex}`);
   }
   
-  let input = null;
+  // Get the input by its ID (set in initializeTable)
+  const input = document.getElementById(`shares-row-${rowIndex}`);
   
-  // Method 1: Get by direct ID
-  input = document.querySelector(`#shares-row-${rowIndex}`);
-  
-  // Method 2: Try by data-row attribute if ID doesn't work
-  if (!input) {
-    input = document.querySelector(`input.shares-input[data-row="${rowIndex}"]`);
-  }
-  
-  // Method 3: Try by position in document
-  if (!input) {
-    const allInputs = document.querySelectorAll('input.shares-input');
-    
-    // For row 1, we want input at index 0, and so on
-    const inputIndex = rowIndex - 1;
-    if (inputIndex >= 0 && inputIndex < allInputs.length) {
-      input = allInputs[inputIndex];
-    }
-  }
-  
-  // Method 4: Try by grid cell index
-  if (!input) {
-    const columnCount = 8; // Number of columns in the table
-    
-    // Calculate expected indices for share inputs in the grid
-    // Each row has columnCount cells, and the share input is in the last column (index 7)
-    const cellIndices = Array.from({length: rowCount}, (_, i) => (i + 1) * columnCount + 7);
-    const cellIndex = cellIndices[rowIndex - 1];
-    
-    if (cellIndex !== undefined) {
-      const cells = document.querySelectorAll('.grid-cell');
-      
-      if (cellIndex < cells.length) {
-        const cell = cells[cellIndex];
-        input = cell.querySelector('input.shares-input');
-      }
-    }
-  }
-  
-  // If still not found after all attempts
+  // If not found, throw an error
   if (!input) {
     throw new Error(`Shares input not found for row ${rowIndex}`);
   }
