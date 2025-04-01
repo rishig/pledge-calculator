@@ -10,6 +10,8 @@ const priceWarningElement = document.getElementById('price-warning');
 const totalToCharityElement = document.getElementById('total-to-charity');
 const totalToYouElement = document.getElementById('total-to-you');
 
+const rowCount = 8; // Number of rows in the table
+
 // Function to parse input as a number
 function parseInputAsNumber(input) {
   const value = input.value.trim();
@@ -41,7 +43,7 @@ function formatNumber(amount) {
 // Function to get row share count
 function getRowShares(rowIndex) {
   // Safety check
-  if (rowIndex < 1 || rowIndex > 8) {
+  if (rowIndex < 1 || rowIndex > rowCount) {
     throw new Error(`Invalid row index: ${rowIndex}`);
   }
   
@@ -68,8 +70,11 @@ function getRowShares(rowIndex) {
   
   // Method 4: Try by grid cell index
   if (!input) {
-    // These are the expected indices for share inputs in the grid:
-    const cellIndices = [15, 23, 31, 39, 47, 55, 63, 71];
+    const columnCount = 8; // Number of columns in the table
+    
+    // Calculate expected indices for share inputs in the grid
+    // Each row has columnCount cells, and the share input is in the last column (index 7)
+    const cellIndices = Array.from({length: rowCount}, (_, i) => (i + 1) * columnCount + 7);
     const cellIndex = cellIndices[rowIndex - 1];
     
     if (cellIndex !== undefined) {
@@ -245,13 +250,15 @@ function createTableCell(formula, cell) {
 
 // Calculate value for a specific cell (row, column) with shares
 function calculateCellValue(row, col) {
+  const columnCount = 8; // Number of columns in the table
+  
   // Validate inputs
-  if (row < 1 || row > 8 || col < 0 || col > 7) {
+  if (row < 1 || row > rowCount || col < 0 || col > columnCount - 1) {
     return 0;
   }
   
-  // Hardcoded mapping of row/col to cell indices
-  const rowOffset = (row - 1) * 8; 
+  // Mapping of row/col to cell indices
+  const rowOffset = (row - 1) * columnCount; 
   const cellIndex = rowOffset + col;
   
   // Find the cell
@@ -289,12 +296,12 @@ function calculateCellValue(row, col) {
 function updateTableCells() {
   // Get all formula cells
   const cells = document.querySelectorAll('.grid-cell');
-  const rowSize = 8; // 8 columns per row
+  const columnCount = 8; // Number of columns in the table
   
   // Update all cells that have formulas
   cells.forEach((cell, index) => {
-    const row = Math.floor(index / rowSize);
-    const col = index % rowSize;
+    const row = Math.floor(index / columnCount);
+    const col = index % columnCount;
     
     // Only update columns 4-7 (indices 3-6) which contain formulas
     // Skip column 8 (index 7) which contains input boxes
@@ -326,7 +333,7 @@ function updateTotals() {
   const totalShares = document.getElementById('total-shares');
   
   // Find number of rows (excluding header and totals rows)
-  const numRows = 8; // We know there are 8 rows of data
+  const numRows = rowCount; // Use rowCount constant
   
   // Initialize totals
   let govTotal = 0;
@@ -445,12 +452,12 @@ function calculateTaxes() {
 function initializeTable() {
   // Get all formula cells - these are all grid cells after the header row
   const cells = document.querySelectorAll('.grid-cell');
-  const rowSize = 8; // 8 columns per row
+  const columnCount = 8; // Number of columns in the table
   
   // Process all cells using their row and column position
   cells.forEach((cell, index) => {
-    const row = Math.floor(index / rowSize);
-    const col = index % rowSize;
+    const row = Math.floor(index / columnCount);
+    const col = index % columnCount;
     
     // Process columns 4-7 (indices 3-6) which have formulas
     if (col >= 3 && col < 7) {
@@ -470,9 +477,9 @@ function initializeTable() {
       const input = cell.querySelector('input.shares-input');
       if (input) {
         // Calculate the data row
-        // Header row is first 8 cells (0-7)
+        // Header row is first columnCount cells (0-7)
         // First data row is cells 8-15, which is row 1
-        const dataRow = Math.floor((index - 8) / 8) + 1;
+        const dataRow = Math.floor((index - columnCount) / columnCount) + 1;
         
         // Set a unique ID based on the row
         input.id = `shares-row-${dataRow}`;
@@ -511,6 +518,7 @@ matchRadios.forEach(radio => {
 function attachSharesInputListeners() {
   // First, get all share inputs directly to ensure we find all of them
   const allInputs = document.querySelectorAll('input.shares-input');
+
   
   // Clear existing IDs and data attributes
   allInputs.forEach(input => {
@@ -518,8 +526,8 @@ function attachSharesInputListeners() {
     if (input.hasAttribute('data-row')) input.removeAttribute('data-row');
   });
   
-  // If we found the expected 8 inputs, directly assign them in document order
-  if (allInputs.length === 8) {
+  // If we found the expected rowCount inputs, directly assign them in document order
+  if (allInputs.length === rowCount) {
     // Process each input directly instead of through grid cells
     allInputs.forEach((input, index) => {
       const rowNum = index + 1; // 1-based row number
@@ -539,45 +547,6 @@ function attachSharesInputListeners() {
       });
     });
   } 
-  // Fallback to cell-by-cell assignment if we don't have exactly 8 inputs
-  else {
-    // These are the expected indices for the 8 data rows
-    const expectedCellIndices = [15, 23, 31, 39, 47, 55, 63, 71];
-    
-    // Get all grid cells
-    const cells = document.querySelectorAll('.grid-cell');
-    
-    // Process each expected cell index
-    expectedCellIndices.forEach((cellIndex, index) => {
-      // Calculate row number (1-based)
-      const rowNum = index + 1;
-      
-      if (cellIndex >= cells.length) {
-        return;
-      }
-      
-      const cell = cells[cellIndex];
-      const input = cell.querySelector('input.shares-input');
-      
-      if (!input) {
-        return;
-      }
-      
-      // Set ID and data attribute
-      input.id = `shares-row-${rowNum}`;
-      input.setAttribute('data-row', rowNum.toString());
-      
-      // Clear existing listeners and add new one
-      const newInput = input.cloneNode(true);
-      input.parentNode.replaceChild(newInput, input);
-      
-      // Add event listener
-      newInput.addEventListener('input', function() {
-        // Recalculate totals when shares change
-        updateTotals();
-      });
-    });
-  }
 }
 
 // Initialize table and calculate on page load
