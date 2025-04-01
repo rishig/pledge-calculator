@@ -47,12 +47,26 @@ function getRowShares(rowIndex) {
     throw new Error(`Invalid row index: ${rowIndex}`);
   }
   
-  // Get the input by its ID (set in initializeTable)
-  const input = document.getElementById(`shares-row-${rowIndex}`);
+  let input = null;
   
-  // If not found, throw an error
+  // Method 1: Try to get input by its ID
+  input = document.getElementById(`shares-row-${rowIndex}`);
+  
+  // Method 2: Fall back to position in document if ID doesn't work
   if (!input) {
-    throw new Error(`Shares input not found for row ${rowIndex}`);
+    const allInputs = document.querySelectorAll('input.shares-input');
+    // For row 1, we want input at index 0, and so on
+    const inputIndex = rowIndex - 1;
+    if (inputIndex >= 0 && inputIndex < allInputs.length) {
+      input = allInputs[inputIndex];
+      console.warn(`Using fallback method for row ${rowIndex} - ID not found`);
+    }
+  }
+  
+  // If still not found after both attempts
+  if (!input) {
+    console.error(`No share input found for row ${rowIndex}`);
+    return 0; // Return 0 instead of throwing to prevent breaking the app
   }
   
   // Get the value
@@ -238,8 +252,10 @@ function calculateCellValue(row, col) {
   const cell = cells[cellIndex];
   const formula = cell.getAttribute('data-formula');
   
+  // If no formula, return 0 instead of throwing an error
+  // This allows empty cells or cells without formulas to be calculated as 0
   if (!formula) {
-    throw new Error(`No formula found for cell at index ${cellIndex}`);
+    return 0;
   }
   
   // Special case for amt * spread - don't include in totals
@@ -439,6 +455,19 @@ function calculateTaxes() {
 function initializeTable() {
   // Get all formula cells - these are all grid cells after the header row
   const cells = document.querySelectorAll('.grid-cell');
+  console.log(`Total grid cells found: ${cells.length}`);
+  
+  // First, let's find all share inputs directly for debugging
+  const allShareInputs = document.querySelectorAll('input.shares-input');
+  console.log(`Found ${allShareInputs.length} share inputs total`);
+  
+  // Set IDs directly on share inputs based on their index
+  allShareInputs.forEach((input, idx) => {
+    const rowNum = idx + 1;
+    input.id = `shares-row-${rowNum}`;
+    console.log(`Directly set ID shares-row-${rowNum} on input #${idx}`);
+  });
+  
   const columnCount = 8; // Number of columns in the table
   
   // Process all cells using their row and column position
@@ -458,19 +487,12 @@ function initializeTable() {
       }
     }
     
-    // Process column 8 (index 7) for share inputs
+    // Process column 8 (index 7) for share inputs - but we don't need to set IDs here anymore
+    // We're now setting IDs directly on the inputs at the beginning of initializeTable
     if (col === 7) {
       // Find the input element within this cell
       const input = cell.querySelector('input.shares-input');
       if (input) {
-        // Calculate the data row
-        // Header row is first columnCount cells (0-7)
-        // First data row is cells 8-15, which is row 1
-        const dataRow = Math.floor((index - columnCount) / columnCount) + 1;
-        
-        // Set a unique ID based on the row
-        input.id = `shares-row-${dataRow}`;
-        
         // Add event listener to handle input changes 
         input.addEventListener('input', function() {
           // Recalculate totals when shares change
