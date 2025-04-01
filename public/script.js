@@ -47,36 +47,19 @@ function getRowShares(rowIndex) {
     throw new Error(`Invalid row index: ${rowIndex}`);
   }
   
-  let input = null;
+  // Get the input by its ID
+  const input = document.getElementById(`shares-row-${rowIndex}`);
   
-  // Method 1: Try to get input by its ID
-  input = document.getElementById(`shares-row-${rowIndex}`);
-  
-  // Method 2: Fall back to position in document if ID doesn't work
+  // If not found, throw an error
   if (!input) {
-    const allInputs = document.querySelectorAll('input.shares-input');
-    // For row 1, we want input at index 0, and so on
-    const inputIndex = rowIndex - 1;
-    if (inputIndex >= 0 && inputIndex < allInputs.length) {
-      input = allInputs[inputIndex];
-      console.warn(`Using fallback method for row ${rowIndex} - ID not found`);
-    }
+    throw new Error(`Shares input not found for row ${rowIndex}`);
   }
   
-  // If still not found after both attempts
-  if (!input) {
-    console.error(`No share input found for row ${rowIndex}`);
-    return 0; // Return 0 instead of throwing to prevent breaking the app
-  }
-  
-  // Get the value
+  // Get the value and convert to number
   const value = parseFloat(input.value);
-  if (isNaN(value)) {
-    // Default to 0 if not a number - this will show a useful error in console but not break the app
-    console.error(`Invalid share value for row ${rowIndex}: "${input.value}" is not a number`);
-    return 0;
-  }
-  return value;
+  
+  // Return 0 if not a valid number
+  return isNaN(value) ? 0 : value;
 }
 
 // Function to format currency
@@ -129,7 +112,7 @@ function calculateFormulaValue(formula) {
   } else if (formula === '(1 - ltcg) * sprain') {
     result = (1 - ltcgRate) * sprain;
   } else if (formula.startsWith('amt * spread')) {
-    // Assume AMT is some percentage (using income tax for simplicity)
+    // Assume AMT is some percentage (includes state tax) 
     result = 0.35 * spread;
   } else if (formula === '- strike price') {
     // Just the negative of the strike price
@@ -154,80 +137,19 @@ function createTableCell(formula, cell) {
     return '';
   }
   
-  // Get input values for calculations
-  const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
-  const ltcgRate = parseInputAsNumber(ltcgRateInput) / 100;
-  const strikePrice = parseInputAsNumber(strikePriceInput);
-  const exercisePrice = parseInputAsNumber(exercisePriceInput);
-  const salePrice = parseInputAsNumber(salePriceInput);
+  // Special case for AMT * spread - display in brackets
+  if (formula.startsWith('amt * spread')) {
+    return `
+      <div class="formula">${formula}</div>
+      <div class="value">[${formatCurrency(calculateFormulaValue(formula))}]</div>
+    `;
+  } 
   
-  // Calculate basic values
-  const spread = exercisePrice - strikePrice;
-  const gain = salePrice - exercisePrice;
-  const sprain = salePrice - strikePrice;
-  
-  // No need for special match column handling as it's been removed
-  
-  // Handle special cases based on the specific formula text
-  // Get the match multiplier for charity calculations
-  const matchMultiplier = getMatchMultiplier();
-
-  // Handle sale price with match multiplier  
-  if (formula === 'sale price * (1 + match)') {
-    const value = salePrice * (1 + matchMultiplier);
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(formatNumber(value))}</div>
-    `;
-  } else if (formula === 'sale price') {
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(formatNumber(salePrice))}</div>
-    `;
-  } else if (formula === '0') {
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(0)}</div>
-    `;
-  } else if (formula === '- strike price') {
-    // This is just the negative of the strike price
-    const value = -strikePrice;
-    
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(formatNumber(value))}</div>
-    `;
-  } else if (formula === '- strike price - income tax * sprain') {
-    // This should be just the negative of strike price minus income tax * sprain
-    const value = -strikePrice - incomeTaxRate * sprain;
-    
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(formatNumber(value))}</div>
-    `;
-  } else if (formula === '- strike price - income tax * spread') {
-    // This should be just the negative of strike price minus income tax * spread
-    const value = -strikePrice - incomeTaxRate * spread;
-    
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(formatNumber(value))}</div>
-    `;
-  } else if (formula.startsWith('amt * spread')) {
-    // Special case for AMT * spread - display in brackets
-    const value = 0.35 * spread; // Using 0.35 as per the formula's definition
-    
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">[${formatCurrency(formatNumber(value))}]</div>
-    `;
-  } else {
-    // Standard formula
-    return `
-      <div class="formula">${formula}</div>
-      <div class="value">${formatCurrency(calculateFormulaValue(formula))}</div>
-    `;
-  }
+  // Standard formula - use the value from calculateFormulaValue
+  return `
+    <div class="formula">${formula}</div>
+    <div class="value">${formatCurrency(calculateFormulaValue(formula))}</div>
+  `;
 }
 
 // Calculate value for a specific cell (row, column) with shares
@@ -260,7 +182,7 @@ function calculateCellValue(row, col) {
   
   // Special case for amt * spread - don't include in totals
   if (formula.startsWith('amt * spread')) {
-    return 0; // This is an intentional exclusion from totals, not a failure
+    return 0; // This is an intentional exclusion from totals
   }
   
   // Get base value from formula
