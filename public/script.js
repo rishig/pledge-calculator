@@ -538,44 +538,15 @@ matchRadios.forEach(radio => {
   radio.addEventListener('change', calculateTaxes);
 });
 
-// Function to directly attach event listeners to all shares inputs
-function attachSharesInputListeners() {
-  // First, get all share inputs directly to ensure we find all of them
-  const allInputs = document.querySelectorAll('input.shares-input');
-
-  
-  // Clear existing IDs and data attributes
-  allInputs.forEach(input => {
-    if (input.id) input.removeAttribute('id');
-    if (input.hasAttribute('data-row')) input.removeAttribute('data-row');
-  });
-  
-  // If we found the expected rowCount inputs, directly assign them in document order
-  if (allInputs.length === rowCount) {
-    // Process each input directly instead of through grid cells
-    allInputs.forEach((input, index) => {
-      const rowNum = index + 1; // 1-based row number
-      
-      // Set ID and data attribute
-      input.id = `shares-row-${rowNum}`;
-      input.setAttribute('data-row', rowNum.toString());
-      
-      // Clear existing listeners and add new one
-      const newInput = input.cloneNode(true);
-      input.parentNode.replaceChild(newInput, input);
-      
-      // Add event listener
-      newInput.addEventListener('input', function() {
-        // Recalculate totals when shares change
-        updateTotals();
-      });
-    });
-  } 
-}
-
 // Initialize table and calculate on page load
 window.addEventListener('DOMContentLoaded', function() {
   initializeTable();
-  attachSharesInputListeners(); // Directly attach listeners
+  
+  // Add input event listeners directly to share inputs
+  const allShareInputs = document.querySelectorAll('input.shares-input');
+  allShareInputs.forEach(input => {
+    input.addEventListener('input', updateTotals);
+  });
+  
   calculateTaxes();
 });
