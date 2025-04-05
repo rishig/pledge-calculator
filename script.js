@@ -335,7 +335,7 @@ function updateExerciseCostNotes() {
   // Update payment-when-exercised
   const paymentNote = document.getElementById('payment-when-exercised');
   if (paymentNote) {
-    paymentNote.textContent = `${formatCurrency(nsoExerciseCost)}/share or ${formatCurrency(strikePrice)}/share + AMT respectively`;
+    paymentNote.textContent = `${formatCurrency(nsoExerciseCost)}/share or ${formatCurrency(strikePrice)}/share + AMT for NSO/ISO respectively`;
   }
 }
 

@@ -272,31 +272,43 @@
         <!-- Notes Section -->
         <div id="notes" style="margin-top: 40px; margin-bottom: 30px;">
           <div style="max-width: 600px;">
-            <h4 style="font-size: 1rem; color: #555; margin-bottom: 16px;">Cashflow and risk considerations</h4>
-            <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 24px;">
-              <li>For Cashless exercise and RSUs, there are no considerations. You put up no money ahead of time.</li>
+            <h3 style="font-size: 1.1rem; color: #555; margin-bottom: 16px;">Cashflow and risk considerations</h3>
+            <p style="font-size: 0.85rem; margin-bottom: 12px;">
+              For Cashless exercise and RSUs, there are no cashflow or risk considerations, since you don't commit any money before the sale.
+              So for the rest of the section we only consider exercising NSOs or ISOs in advance of a sale.
+            </p>
+
+            <p style="font-size: 0.92rem; margin-bottom: 8px; font-weight: 500;">Cashflow</p>
+            <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 12px;">              
               <li>When you exercise NSOs, you owe "strike price + income tax * spread"<span id="nso-exercise-cost"> ($15/share)</span> at the time of exercise. 
                 Some of this is withheld by the company, and the rest you have to pay at tax time.</li>
               <li>When you exercise ISOs, you owe "strike price"<span id="iso-exercise-cost"> ($10/share)</span> for sure, and then possibly also owe AMT on the spread. 
-                AMT is not withheld by the company, and so just appears at tax time.</li>
+                AMT is not withheld by the company, but appears at tax time.</li>
             </ul>
+
+            <p style="font-size: 0.85rem; margin-bottom: 12px;">
+              The relevance to cashflow is that even if things go well, you won't have access to this money until there is a liquidity event and you sell.
+            </p>
+
+            <p style="font-size: 0.92rem; margin-bottom: 8px; font-weight: 500;">Risk</p>
             
-            <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">For exercised ISOs and NSOs:</p>
-            
-            <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">For sales:</p>
+            <p style="font-size: 0.85rem; margin-bottom: 12px;">
+              If sale price &gt;= exercise price (i.e. if gain &gt;= 0), then exercising early is always at least as good (on net) as cashless exercise (so, nothing to worry about).
+              However, if gain < 0, then exercising early will end up being worse than cashless exercise.
+           </p>
+
+            <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">How sales work:</p>
             <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
-              <li>If sale price &gt;= exercise price (i.e. if gain &gt;= 0), then exercising early is always at least as good, and often better, than cashless exercise. So the only risk is when sale price &lt; exercise price.</li>
-              <li>If the sale price is 0, you lose everything you paid at time of exercise, but get a capital loss of "exercise price" that you can carry forward indefinitely, to offset future capital gains.</li>
-              <li>For things in between (0 &lt; sale price &lt; exercise price), you did worse than if you had cashless exercised, but are only net out money if sale price &lt; "what you paid when you exercised" (<span id="payment-when-exercised">$15/share or $10/share + AMT respectively</span>). At the time of sale you'll get a free capital loss of "exercise price - sale price", that you can carry forward indefinitely.</li>
+              <li>In the extreme case, if the sale price is 0, you lose everything you paid at time of exercise, but get a capital loss of "exercise price" that you can carry forward indefinitely, to offset future capital gains.</li>
+              <li>In general, when gain < 0, you did worse than if you had cashless exercised, but are only net out money if sale price &lt; "what you paid when you exercised" (<span id="payment-when-exercised">$15/share or $10/share + AMT for NSO/ISO respectively</span>). At the time of sale you'll get a free capital loss of "-gain" that you can carry forward indefinitely.</li>
             </ul>
             
             <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">For donations:</p>
             <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 24px;">
-              <li>Again, the risk only appears if sale price &lt; exercise price.</li>
-              <li>In that scenario, you should sell and donate the money in almost all cases, vs directly donating the shares. If you do end up donating directly, it's similar to selling and donating the cash, except you don't get the free capital loss.</li>
+              <li>If gain < 0, you should sell and donate the money in almost all cases, instead of directly donating the shares. If you do end up donating directly, it's similar to selling and donating the cash, except you don't get the free capital loss.</li>
             </ul>
             
-            <h4 style="font-size: 1rem; color: #555; margin-bottom: 12px;">Footnotes</h4>
+            <h3 style="font-size: 1.1rem; color: #555; margin-bottom: 12px;">Footnotes</h3>
             <p style="font-size: 0.85rem; margin-bottom: 12px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[1]</span>
               I decided to elide differences of a few percent and rare-ish technicalities in favor of simplification. I'm happy to go over any particular (US/California-centric) tax situation if you think 
