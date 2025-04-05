@@ -484,6 +484,19 @@ matchRadios.forEach(radio => {
   radio.addEventListener('change', calculateTaxes);
 });
 
+// Function to toggle collapsible sections
+function toggleSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  const toggle = document.getElementById(sectionId.replace('section', 'toggle'));
+  if (section.style.display === 'none') {
+    section.style.display = 'block';
+    toggle.innerHTML = '&#9660;'; // Down arrow
+  } else {
+    section.style.display = 'none';
+    toggle.innerHTML = '&#9654;'; // Right arrow
+  }
+}
+
 // Initialize table and calculate on page load
 window.addEventListener('DOMContentLoaded', function() {
   initializeTable();
