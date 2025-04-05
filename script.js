@@ -311,12 +311,43 @@ function updateTotals() {
   totalToYouElement.textContent = roundedTotalToYou > 0 ? `$${roundedTotalToYou.toLocaleString()}` : '$0';
 }
 
+// Function to update exercise cost notes
+function updateExerciseCostNotes() {
+  const strikePrice = parseInputAsNumber(strikePriceInput);
+  const exercisePrice = parseInputAsNumber(exercisePriceInput);
+  const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
+  
+  const spread = exercisePrice - strikePrice;
+  const nsoExerciseCost = strikePrice + (incomeTaxRate * spread);
+  
+  // Update NSO note
+  const nsoNote = document.getElementById('nso-exercise-cost');
+  if (nsoNote) {
+    nsoNote.textContent = ` (${formatCurrency(nsoExerciseCost)}/share)`;
+  }
+  
+  // Update ISO note
+  const isoNote = document.getElementById('iso-exercise-cost');
+  if (isoNote) {
+    isoNote.textContent = ` (${formatCurrency(strikePrice)}/share)`;
+  }
+  
+  // Update payment-when-exercised
+  const paymentNote = document.getElementById('payment-when-exercised');
+  if (paymentNote) {
+    paymentNote.textContent = `${formatCurrency(nsoExerciseCost)}/share or ${formatCurrency(strikePrice)}/share + AMT respectively`;
+  }
+}
+
 // Function to calculate taxes and display results
 function calculateTaxes() {
   // Validate required elements exist
   if (!resultsElement || !priceWarningElement) {
     throw new Error('Required DOM elements not found');
   }
+  
+  // Update exercise costs in notes
+  updateExerciseCostNotes();
   
   // Get input values
   const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
@@ -442,6 +473,11 @@ ltcgRateInput.addEventListener('input', handleNumberInput);
 strikePriceInput.addEventListener('input', handleNumberInput);
 exercisePriceInput.addEventListener('input', handleNumberInput);
 salePriceInput.addEventListener('input', handleNumberInput);
+
+// Make sure exercise costs update when price inputs change
+strikePriceInput.addEventListener('input', updateExerciseCostNotes);
+exercisePriceInput.addEventListener('input', updateExerciseCostNotes);
+incomeTaxRateInput.addEventListener('input', updateExerciseCostNotes);
 
 // Add event listeners for match radio buttons
 matchRadios.forEach(radio => {
