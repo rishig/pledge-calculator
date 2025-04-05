@@ -397,6 +397,8 @@ function calculateTaxes() {
     priceWarningElement.innerHTML = `
       <div style="margin-bottom: 15px; margin-top: 15px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; color: #856404;">
         <strong>Warning:</strong> There are a number of material considerations when Sale Price &lt; Exercise Price that haven't been incorporated below; consider this unsupported.
+        The important thing to know is that you should be very careful donating shares directly in this situation; in every case it is strictly better (economically) to sell and 
+        donate the cash instead. See "Cashflow and risk considerations" below for more details.
       </div>
     `;
   } else {
