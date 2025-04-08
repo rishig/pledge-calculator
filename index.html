@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Pledge Taxes Calculator</title>
     <meta property="og:title" content="Pledge taxes calculator" />
-    <meta property="og:description" content="Sell vs donate, exercise vs wait, ISO vs NSO, and tax implications of each in a simplified chart." />
+    <meta property="og:description" content="Sell vs donate, exercise vs wait, ISO vs NSO, and tax implications in one simplified chart." />
     <meta property="og:image" content="https://pledge-calculator.onrender.com/screenshot.png" />
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="donation-calculator-favicon.svg">
@@ -275,6 +275,191 @@
         <!-- Notes Section -->
         <div id="notes" style="margin-top: 40px; margin-bottom: 30px;">
           <div style="max-width: 600px;">
+            <!-- Tax deduction limitations Section -->
+            <div class="collapsible-section" style="margin-bottom: 24px;">
+              <h3 style="font-size: 1.1rem; color: #555; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection('deduction-limits-section')">
+                <span id="deduction-limits-toggle" style="margin-right: 8px; font-size: 0.8em; width: 12px;">&#9660;</span>
+                Tax deduction limitations
+              </h3>
+              <div id="deduction-limits-section" style="display: block; margin-top: 16px;">
+                <div style="margin-bottom: 16px; padding: 10px; background-color: #f2f9ff; border: 1px solid #b8daff; border-radius: 4px; color: #004085; display: flex;">
+                  <div style="font-weight: bold; margin-right: 6px; font-size: 0.85rem">Tip:</div>
+                  <div style="font-size: 0.85rem;">If you're only Cashless exercising, and willing to donate "pledge %age of your proceeds" each time you sell (i.e. in the same calendar year that you sell), then you can just do that and ignore the rest of this section.</div>
+                </div>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  DAFs are a "50% limit organizations", in the parlance of the IRS. 50% limit organizations have the following tax deduction limits:
+                </p>
+                
+                <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%;">
+                  <thead>
+                    <tr>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem;">Holding period</th>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem;">Annual deduction limit, as a % of income</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Cashless exercise during liquidity</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">50% <a href="#footnotes" style="color: inherit; text-decoration: none;">[a]</a></td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose &lt;1 yr after exercise</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">50%</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose 1+ yr after exercise</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">30% if using sale price, or 50% if using cost basis <a href="#footnotes" style="color: inherit; text-decoration: none;">[b]</a></td>
+                    </tr>
+                  </tbody>
+                </table>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  Extra donations carry forward for 5 years. So if you make $100k/yr, and donate in cash, you can donate $300k in year 1 (50% * 100k * 6 years), and have it all (eventually) be deducted.
+                </p>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[a]</span>
+                  It's actually 60% federally for 2025 (still 50% for California).
+                </p>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[b]</span>
+                  See "The cost basis method for NSOs and ISOs" below. For now, and unless otherwise stated, assume we're using the 30% method.
+                </p>
+                
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 20px; margin-bottom: 12px;">Doing the computation</h4>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  We'll use the inputs from "Stock Options: Compare Your Options" above, along with the following notation:
+                </p>
+                
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
+                  <li>D: number of donated shares</li>
+                  <li>S: number of sold shares</li>
+                  <li>DS: number of shares donated or sold (D + S)</li>
+                  <li>Cashless: Cashless exercise during liquidity</li>
+                  <li>Long: disposed 1+ yr after exercise</li>
+                  <li>Short: disposed &lt;1 yr after exercise</li>
+                </ul>
+                                
+                <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%;" id="computation-table">
+                  <thead>
+                    <tr>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem; width: 5%;"></th>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem; width: 45%;">Computation step</th>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem; width: 50%;">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd; width: 5%;">1</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd; width: 45%;">Deductions subject to 30% limit</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd; width: 50%;" data-formula="Long D * sale price">
+                        <div style="font-size: 0.7rem; color: #666; margin-bottom: 4px;">Long D * sale price</div>
+                        <div style="font-weight: 500; color: #333; padding-left: 8px;" id="calc-row1"></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">2</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Deductions subject to 50% limit</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;" data-formula="Cashless D * (1 - income tax) * sprain + Short D * exercise price">
+                        <div style="font-size: 0.7rem; color: #666; margin-bottom: 4px;">Cashless D * (1 - income tax) * sprain +<br>Short D * exercise price</div>
+                        <div style="font-weight: 500; color: #333; padding-left: 8px;" id="calc-row2"></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">3</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Income generated from exercise and sale of options</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;" data-formula="(Cashless DS + Short DS + Long S) * sprain + NSO D * spread + RSU * sale price">
+                        <div style="font-size: 0.7rem; color: #666; margin-bottom: 4px;">(Cashless DS + Short DS + Long S) * sprain +<br>NSO D * spread + RSU * sale price</div>
+                        <div style="font-weight: 500; color: #333; padding-left: 8px;" id="calc-row3"></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 10px; border: 1px solid #ddd; background-color: #f0f0f0; font-weight: 600; border-top: 2px solid #ccc;">4</td>
+                      <td style="padding: 8px 10px; border: 1px solid #ddd; background-color: #f0f0f0; border-top: 2px solid #ccc;">Add'l wage/investment income needed (over 10+ years) to fully deduct</td>
+                      <td style="padding: 8px 10px; border: 1px solid #ddd; background-color: #f0f0f0; border-top: 2px solid #ccc;" data-formula="max(100/30 * row1, 2 * (row1 + row2)) - row3">
+                        <div style="font-size: 0.7rem; color: #666; margin-bottom: 4px;">max(100/30 * row1, 2 * (row1 + row2)) - row3</div>
+                        <div style="font-weight: 500; color: #333; padding-left: 8px;" id="calc-row4"></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Discussion</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  I think the right way to think about the number above is "how complicated of a scheme do I need to fully realize the tax deduction"? Some possible schemes, in increasing complexity:
+                </p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 24px;">
+                  <li>Assume it'll work out. If Row1 + Row2 is less than your annual household income, this is likely to be the case.</li>
+                  <li>Any time you sell, also donate at least your pledge %age in that calendar year. If you're mostly cashless exercising, or have a pledge %age much less than 50%, this is likely to work.</li>
+                  <li>Start the clock right away. Starting Fall 2025, just saturate your 30% and 50% buckets each year, with no further planning.</li>
+                  <li>Ditto, but also expect to fully utilize the "you have 3 years post-liquidity to make the donation" provision to postpone donations on the other end [c].</li>
+                  <li>Switch to the cost basis method for your NSOs, and possibly your ISOs. Likely relevant in worlds where Anthropic does extremely well, and you have a lot of Long D.</li>
+                </ul>
+
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  Once you're in the last bullet, you're no longer getting the full tax deduction, and the calculation in the Stock Options table is no longer correct. 
+                  The tax deduction benefit should instead be something like "(row3 + expected add'l income) * (30 to 50%) * income tax".
+                </p>
+
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[c]</span>
+                  One implementation technicality: you always have to use the current year's donations before you can dip into your carryover, even if the carryover is about to expire. In the extreme case, let's say you make a 10x-your-income donation in year 1. You will need to delay any further donations till year 7 to get a deduction benefit for them.
+                </p>
+                
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">The cost basis method for NSOs and ISOs (advanced)</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  This is only relevant if you're in the last bullet from the Discussion section.
+                </p>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  If you expect to fully saturate your 30% deductions, but not your 50% deductions, you can switch your Long Ds to fall under the 50% limit. Here are the deductible 
+                  amounts under each limit:
+                </p>
+                
+                <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%; max-width: 400px;">
+                  <thead>
+                    <tr>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem;"></th>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem;">Under 30% limit</th>
+                      <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem;">Under 50% limit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">NSO</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Sale price</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Exercise price</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">ISO</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Sale price</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Strike price</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  As you can see, you can deduct (significantly) more under the 30% limit, but that may be small consolation if you expect to fully exhaust the limit. 
+                  If you start switching shares over, you'll want to switch your NSOs before your ISOs.
+                </p>
+
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  It's quite possible that whether you convert shares to the 50% rule in a given year will depend on your predictions of the future (e.g. will you have a job? Will the rest of your shares be worth nothing, or a lot?) To some degree you can travel backwards in time, since you can amend prior tax returns within 3 years of when you file (or the April filing date, if you filed early). That means you can amend your 2021 return as late as early April 2025 (!), and possibly later. [d]
+                </p>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[d]</span>
+                  I have never actually done this, so maybe run this by an accountant if this ever becomes decision-relevant.
+                </p>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[d2]</span>
+                  Possibly you're also limited to submitting 3 amended returns per tax year(?) See [d].
+                </p>
+              </div>
+            </div>
+            
             <div class="collapsible-section">
               <h3 style="font-size: 1.1rem; color: #555; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection('cashflow-section')">
                 <span id="cashflow-toggle" style="margin-right: 8px; font-size: 0.8em; width: 12px;">&#9654;</span>
@@ -324,7 +509,7 @@
               </div>
             </div>
             
-            <h3 style="font-size: 1.1rem; color: #555; margin-bottom: 12px;">Footnotes</h3>
+            <h3 id="footnotes" style="font-size: 1.1rem; color: #555; margin-bottom: 12px;">Footnotes</h3>
             <p style="font-size: 0.85rem; margin-bottom: 12px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[1]</span>
               I decided to elide differences of a few percent and rare-ish technicalities in favor of simplification. I'm happy to go over any particular (US/California-centric) tax situation if you think 

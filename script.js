@@ -467,6 +467,7 @@ function initializeTable() {
 // Function to handle number input
 function handleNumberInput(event) {
   calculateTaxes();
+  updateComputationTable();
 }
 
 // Add event listeners
@@ -485,6 +486,84 @@ incomeTaxRateInput.addEventListener('input', updateExerciseCostNotes);
 matchRadios.forEach(radio => {
   radio.addEventListener('change', calculateTaxes);
 });
+
+// Function to extract share counts from the table
+function getSharesForCategory() {
+  const shares = {};
+  const inputs = document.querySelectorAll('.grid-table input.shares-input');
+  
+  // Grid has 8 columns per row, share inputs are in column 8 (index 7)
+  // Row 0: Header, Row 1-8: Data rows (1-based in visual table, 0-based in code)
+  
+  // Cashless exercise (row 1-2) - Visual rows 1-2
+  const cashlessSell = parseFloat(inputs[0].value || 0);  // Row 1
+  const cashlessDonate = parseFloat(inputs[1].value || 0); // Row 2
+  
+  // Short dispose (row 3-4) - Visual rows 3-4
+  const shortSell = parseFloat(inputs[2].value || 0);      // Row 3
+  const shortDonate = parseFloat(inputs[3].value || 0);    // Row 4
+  
+  // ISO Long dispose (row 5-6) - Visual rows 5-6
+  const isoLongSell = parseFloat(inputs[4].value || 0);    // Row 5
+  const isoLongDonate = parseFloat(inputs[5].value || 0);  // Row 6
+  
+  // NSO Long dispose (row 7-8) - Visual rows 7-8  
+  const nsoLongSell = parseFloat(inputs[6].value || 0);    // Row 7
+  const nsoLongDonate = parseFloat(inputs[7].value || 0);  // Row 8
+  
+  // RSU (row 9) - Visual row 9
+  const rsuSell = parseFloat(inputs[8].value || 0);        // Row 9
+  
+  // Return all the relevant counts
+  shares.longD = parseFloat(isoLongDonate || 0) + parseFloat(nsoLongDonate || 0); 
+  shares.longS = parseFloat(isoLongSell || 0) + parseFloat(nsoLongSell || 0);
+  shares.shortD = parseFloat(shortDonate || 0);
+  shares.shortS = parseFloat(shortSell || 0);
+  shares.cashlessD = parseFloat(cashlessDonate || 0);
+  shares.cashlessS = parseFloat(cashlessSell || 0);
+  shares.nsoD = parseFloat(nsoLongDonate || 0);
+  shares.rsu = parseFloat(rsuSell || 0);
+  
+  // Calculate DS values (donated + sold)
+  shares.longDS = shares.longD + shares.longS;
+  shares.shortDS = shares.shortD + shares.shortS;
+  shares.cashlessDS = shares.cashlessD + shares.cashlessS;
+  
+  return shares;
+}
+
+// Function to update computation table
+function updateComputationTable() {
+  // Get all the share inputs
+  const shares = getSharesForCategory();
+  
+  // Get the price inputs
+  const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
+  const strikePrice = parseInputAsNumber(strikePriceInput);
+  const exercisePrice = parseInputAsNumber(exercisePriceInput);
+  const salePrice = parseInputAsNumber(salePriceInput);
+  
+  // Calculate spread, gain, sprain
+  const spread = exercisePrice - strikePrice; 
+  const sprain = salePrice - strikePrice;
+  
+  // Calculate row 1: Deductions subject to 30% max 
+  const row1Value = Math.round(shares.longD * salePrice);
+  document.getElementById('calc-row1').textContent = '$' + row1Value.toLocaleString();
+  
+  // Calculate row 2: Deductions subject to 50% max
+  const row2Value = Math.round(shares.cashlessD * (1 - incomeTaxRate) * sprain + shares.shortD * exercisePrice);
+  document.getElementById('calc-row2').textContent = '$' + row2Value.toLocaleString();
+  
+  // Calculate row 3: Income generated from exercise and sale
+  const row3Value = Math.round((shares.cashlessDS + shares.shortDS + shares.longS) * sprain + 
+                    shares.nsoD * spread + shares.rsu * salePrice);
+  document.getElementById('calc-row3').textContent = '$' + row3Value.toLocaleString();
+  
+  // Calculate row 4: Additional income needed
+  const row4Value = Math.round(Math.max((100/30) * row1Value, 2 * (row1Value + row2Value)) - row3Value);
+  document.getElementById('calc-row4').textContent = '$' + row4Value.toLocaleString();
+}
 
 // Function to toggle collapsible sections
 function toggleSection(sectionId) {
@@ -506,8 +585,12 @@ window.addEventListener('DOMContentLoaded', function() {
   // Add input event listeners directly to share inputs
   const allShareInputs = document.querySelectorAll('input.shares-input');
   allShareInputs.forEach(input => {
-    input.addEventListener('input', updateTotals);
+    input.addEventListener('input', function() {
+      updateTotals();
+      updateComputationTable();
+    });
   });
   
   calculateTaxes();
+  updateComputationTable();
 });
