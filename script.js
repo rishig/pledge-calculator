@@ -725,12 +725,11 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
       // Calculate Y value based on piecewise function
       let graphY;
       if (graphX <= maxDeductibleDollarsAtFifty - row3) {
-        // First segment with 50% slope
         graphY = (graphX + row3) * 0.5 * incomeTaxRate;
+      } else if (graphX <= row4) {
+        graphY = midY + (graphX - midX) * 0.3 * incomeTaxRate;
       } else {
-        // Second segment with 30% slope
-        graphY = (maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate) + 
-                 (graphX - maxDeductibleDollarsAtFifty) * 0.3 * incomeTaxRate;
+        graphY = endY;
       }
       
       // Draw tooltip
@@ -740,13 +739,13 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
       ctx.font = 'bold 11px Arial';
       ctx.fillText(`Income: ${formatCurrency(graphX)}, Deduction: ${formatCurrency(graphY)}`, padding + 5, 15);
       
-      // Draw a point on the graph to show exact position, but don't show it for negative X values
-      if (graphX >= 0) {
-        ctx.beginPath();
-        ctx.arc(mouseX, mouseY, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#e74c3c';
-        ctx.fill();
-      }
+      // // Draw a point on the graph to show exact position, but don't show it for negative X values
+      // if (graphX >= 0) {
+      //   ctx.beginPath();
+      //   ctx.arc(mouseX, mouseY, 4, 0, Math.PI * 2);
+      //   ctx.fillStyle = '#e74c3c';
+      //   ctx.fill();
+      // }
     }
   }
   
