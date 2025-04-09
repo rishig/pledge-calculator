@@ -599,7 +599,7 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   // Calculate the maximum Y value for scaling
   // At x=maxDeductibleDollarsAtFifty, y = maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate
   // For the second segment, add (row4 - maxDeductibleDollarsAtFifty) * 0.3 * incomeTaxRate
-  const maxY = incomeTaxRate * (row1 + row2)
+  const maxY = incomeTaxRate * (row1 + row2) * 1.15;
   
   // Ensure we have a reasonable minimum scale for Y
   const yScale = Math.max(maxY, 10000);
@@ -617,14 +617,14 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   ctx.font = 'bold 11px Arial';
   ctx.fillStyle = '#333';
   ctx.textAlign = 'center';
-  ctx.fillText('Add\'l household income over 10 years', canvas.width / 2, canvas.height - 10);
+  ctx.fillText('Household income (excl. shares), next 10 years', canvas.width / 2, canvas.height - 10);
   
   // Draw y-axis label
   ctx.save();
   ctx.translate(15, canvas.height / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.textAlign = 'center';
-  ctx.fillText('Max $ returned via deduction', 0, 0);
+  ctx.fillText('Max deduction', 0, 0);
   ctx.restore();
   
   // Create a clipping region that prevents drawing when X < 0
@@ -641,15 +641,15 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   ctx.moveTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
   
   // First segment endpoint
-  const midX = maxDeductibleDollarsAtFifty - row3;
-  const midY = maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate;
+  const midX = 2 * maxDeductibleDollarsAtFifty - row3;
+  const midY = maxDeductibleDollarsAtFifty * incomeTaxRate;
   const midXPos = padding + (midX / maxX) * graphWidth;
   const midYPos = canvas.height - padding - (midY / yScale) * graphHeight;
   ctx.lineTo(midXPos, midYPos);
   
-  // Second segment endpoint: x=row4, y=midY + (row4-midX) * 0.3 * incomeTaxRate
+  // Second segment endpoint
   const endX = row4
-  const endY = midY + (endX - midX) * 0.3 * incomeTaxRate;
+  const endY = (row1 + row2) * incomeTaxRate;
   const endXPos = padding + (endX / maxX) * graphWidth;
   const endYPos = canvas.height - padding - (endY / yScale) * graphHeight;
   ctx.lineTo(endXPos, endYPos);
@@ -675,6 +675,15 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   // Restore the canvas state to remove clipping region
   ctx.restore();
   
+  // function to format axis values. Should be in millions if >= 1M (with 1 after the decimal), otherwise in thousands
+  function formatAxisValue(value) {
+    if (value >= 1000000) {
+      return '$' + (value / 1000000).toFixed(1) + 'M';
+    } else {
+      return '$' + (value / 1000).toFixed(0) + 'K';
+    }
+  }
+
   // Draw tick marks on axes
   // X-axis ticks
   ctx.font = '10px Arial';
@@ -686,7 +695,7 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
     ctx.moveTo(x, canvas.height - padding);
     ctx.lineTo(x, canvas.height - padding + 5);
     ctx.stroke();
-    ctx.fillText('$' + (value / 1000000).toFixed(1) + 'M', x, canvas.height - padding + 15);
+    ctx.fillText(formatAxisValue(value), x, canvas.height - padding + 15);
   }
   
   // Y-axis ticks
@@ -698,7 +707,7 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
     ctx.lineTo(padding - 5, y);
     ctx.stroke();
     ctx.textAlign = 'right';
-    ctx.fillText('$' + (value / 1000000).toFixed(1) + 'M', padding - 8, y + 4);
+    ctx.fillText(formatAxisValue(value), padding - 8, y + 4);
   }
   
   // Remove any previous event listeners to prevent duplicates
@@ -709,6 +718,10 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   canvas.addEventListener('mousemove', handleGraphHover);
   canvas.addEventListener('mouseleave', handleGraphLeave);
   
+  function linearInterpolation(x, x1, y1, x2, y2) {
+    return y1 + ((y2 - y1) / (x2 - x1)) * (x - x1);
+  }
+
   // Hover handler function to show tooltip
   function handleGraphHover(event) {
     const rect = canvas.getBoundingClientRect();
@@ -724,10 +737,10 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
       
       // Calculate Y value based on piecewise function
       let graphY;
-      if (graphX <= maxDeductibleDollarsAtFifty - row3) {
-        graphY = (graphX + row3) * 0.5 * incomeTaxRate;
-      } else if (graphX <= row4) {
-        graphY = midY + (graphX - midX) * 0.3 * incomeTaxRate;
+      if (graphX <= midX) {
+        graphY = linearInterpolation(graphX, startX, 0, midX, midY);
+      } else if (graphX <= endX) {
+        graphY = linearInterpolation(graphX, midX, midY, endX, endY);
       } else {
         graphY = endY;
       }
@@ -737,7 +750,7 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
       ctx.fillStyle = '#333';
       ctx.textAlign = 'left';
       ctx.font = 'bold 11px Arial';
-      ctx.fillText(`Income: ${formatCurrency(graphX)}, Deduction: ${formatCurrency(graphY)}`, padding + 5, 15);
+      ctx.fillText(`Income: ${formatCurrency(Math.round(graphX/1000))}K, Max deduction: ${formatCurrency(Math.round(graphY/1000))}K`, padding + 5, 15);
       
       // // Draw a point on the graph to show exact position, but don't show it for negative X values
       // if (graphX >= 0) {
