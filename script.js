@@ -395,10 +395,10 @@ function calculateTaxes() {
   // Add warning if sale price is less than exercise price
   if (salePrice < exercisePrice) {
     priceWarningElement.innerHTML = `
-      <div style="margin-bottom: 15px; margin-top: 15px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; color: #856404;">
-        <strong>Warning:</strong> There are a number of material considerations when Sale Price &lt; Exercise Price that haven't been incorporated below; consider this unsupported.
-        The important thing to know is that you should be very careful donating shares directly in this situation; in every case it is strictly better (economically) to sell and 
-        donate the cash instead. See "Cashflow and risk considerations" below for more details.
+      <div style="margin-bottom: 15px; margin-top: 15px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; color: #856404; display: flex;">
+        <div style="font-weight: bold; margin-right: 6px;">Warning:</div>
+        <div>There are a number of material considerations when Sale Price &lt; Exercise Price that haven't been incorporated into the table below. 
+        See "Cashflow and risk considerations" for some related discussion.</div>
       </div>
     `;
   } else {
@@ -522,6 +522,7 @@ function getSharesForCategory() {
   shares.cashlessD = parseFloat(cashlessDonate || 0);
   shares.cashlessS = parseFloat(cashlessSell || 0);
   shares.nsoD = parseFloat(nsoLongDonate || 0);
+  shares.isoD = parseFloat(isoLongDonate || 0); // Added for the new graph calculation
   shares.rsu = parseFloat(rsuSell || 0);
   
   // Calculate DS values (donated + sold)
@@ -560,9 +561,199 @@ function updateComputationTable() {
                     shares.nsoD * spread + shares.rsu * salePrice);
   document.getElementById('calc-row3').textContent = '$' + row3Value.toLocaleString();
   
+  // The piecewise linear graph calculations
+  const maxDeductibleDollarsAtFifty = row2Value + shares.nsoD * exercisePrice + shares.isoD * strikePrice;
+  
   // Calculate row 4: Additional income needed
   const row4Value = Math.round(Math.max((100/30) * row1Value, 2 * (row1Value + row2Value)) - row3Value);
   document.getElementById('calc-row4').textContent = '$' + row4Value.toLocaleString();
+  
+  // Update graph with the new values and additional calculations
+  updateDeductionGraph(row1Value, row2Value, row3Value, row4Value, maxDeductibleDollarsAtFifty, incomeTaxRate);
+}
+
+// Function to draw the deduction graph
+function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFifty, incomeTaxRate) {
+  const canvas = document.getElementById('deduction-graph');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
+  // Clear previous graph
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Set graph dimensions
+  const padding = 40;
+  const graphWidth = canvas.width - padding * 2;
+  const graphHeight = canvas.height - padding * 2;
+  
+  // For the piecewise linear graph formula
+  // x = additional income, starting at x = max(0, -row3)
+  // First segment: from x=max(0,-row3) to x=maxDeductibleDollarsAtFifty, slope = 0.5*incomeTaxRate
+  // Second segment: from x=maxDeductibleDollarsAtFifty to x=row4, slope = 0.3*incomeTaxRate
+  
+  // Calculate max X as 30% more than Row4 value for drawing graph
+  const maxX = Math.max(row4 > 0 ? row4 * 1.3 : maxDeductibleDollarsAtFifty * 1.5, 100000);
+  
+  // Calculate the maximum Y value for scaling
+  // At x=maxDeductibleDollarsAtFifty, y = maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate
+  // For the second segment, add (row4 - maxDeductibleDollarsAtFifty) * 0.3 * incomeTaxRate
+  const maxY = incomeTaxRate * (row1 + row2)
+  
+  // Ensure we have a reasonable minimum scale for Y
+  const yScale = Math.max(maxY, 10000);
+  
+  // Draw axes
+  ctx.beginPath();
+  ctx.moveTo(padding, padding);
+  ctx.lineTo(padding, canvas.height - padding);
+  ctx.lineTo(canvas.width - padding, canvas.height - padding);
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  
+  // Draw x-axis label
+  ctx.font = 'bold 11px Arial';
+  ctx.fillStyle = '#333';
+  ctx.textAlign = 'center';
+  ctx.fillText('Add\'l household income over 10 years', canvas.width / 2, canvas.height - 10);
+  
+  // Draw y-axis label
+  ctx.save();
+  ctx.translate(15, canvas.height / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.fillText('Max $ returned via deduction', 0, 0);
+  ctx.restore();
+  
+  // Create a clipping region that prevents drawing when X < 0
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(padding, padding, graphWidth, graphHeight);
+  ctx.clip();
+  
+  // New piecewise linear graph drawing
+  ctx.beginPath();
+  
+  // Start point
+  const startX = -row3;
+  ctx.moveTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
+  
+  // First segment endpoint
+  const midX = maxDeductibleDollarsAtFifty - row3;
+  const midY = maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate;
+  const midXPos = padding + (midX / maxX) * graphWidth;
+  const midYPos = canvas.height - padding - (midY / yScale) * graphHeight;
+  ctx.lineTo(midXPos, midYPos);
+  
+  // Second segment endpoint: x=row4, y=midY + (row4-midX) * 0.3 * incomeTaxRate
+  const endX = row4
+  const endY = midY + (endX - midX) * 0.3 * incomeTaxRate;
+  const endXPos = padding + (endX / maxX) * graphWidth;
+  const endYPos = canvas.height - padding - (endY / yScale) * graphHeight;
+  ctx.lineTo(endXPos, endYPos);
+  
+  // Last segment, till the end
+  const lastX = maxX;
+  const lastY = endY
+  const lastXPos = padding + (lastX / maxX) * graphWidth;
+  const lastYPos = canvas.height - padding - (lastY / yScale) * graphHeight;
+  ctx.lineTo(lastXPos, lastYPos);
+
+  // Style and stroke the path
+  ctx.strokeStyle = '#0066cc';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Fill the area under the curve
+  ctx.lineTo(padding + graphWidth, canvas.height - padding);
+  ctx.lineTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
+  ctx.fillStyle = 'rgba(0, 102, 204, 0.1)';
+  ctx.fill();
+  
+  // Restore the canvas state to remove clipping region
+  ctx.restore();
+  
+  // Draw tick marks on axes
+  // X-axis ticks
+  ctx.font = '10px Arial';
+  ctx.fillStyle = '#333';
+  for (let i = 0; i <= 5; i++) {
+    const x = padding + (i / 5) * graphWidth;
+    const value = (i / 5) * maxX;
+    ctx.beginPath();
+    ctx.moveTo(x, canvas.height - padding);
+    ctx.lineTo(x, canvas.height - padding + 5);
+    ctx.stroke();
+    ctx.fillText('$' + (value / 1000000).toFixed(1) + 'M', x, canvas.height - padding + 15);
+  }
+  
+  // Y-axis ticks
+  for (let i = 0; i <= 4; i++) {
+    const y = canvas.height - padding - (i / 4) * graphHeight;
+    const value = (i / 4) * yScale;
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(padding - 5, y);
+    ctx.stroke();
+    ctx.textAlign = 'right';
+    ctx.fillText('$' + (value / 1000000).toFixed(1) + 'M', padding - 8, y + 4);
+  }
+  
+  // Remove any previous event listeners to prevent duplicates
+  canvas.removeEventListener('mousemove', handleGraphHover);
+  canvas.removeEventListener('mouseleave', handleGraphLeave);
+  
+  // Add hover functionality
+  canvas.addEventListener('mousemove', handleGraphHover);
+  canvas.addEventListener('mouseleave', handleGraphLeave);
+  
+  // Hover handler function to show tooltip
+  function handleGraphHover(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    
+    // Only activate when within graph bounds
+    if (mouseX >= padding && mouseX <= canvas.width - padding &&
+        mouseY >= padding && mouseY <= canvas.height - padding) {
+      
+      // Convert mouse position to graph coordinates
+      const graphX = ((mouseX - padding) / graphWidth) * maxX;
+      
+      // Calculate Y value based on piecewise function
+      let graphY;
+      if (graphX <= maxDeductibleDollarsAtFifty - row3) {
+        // First segment with 50% slope
+        graphY = (graphX + row3) * 0.5 * incomeTaxRate;
+      } else {
+        // Second segment with 30% slope
+        graphY = (maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate) + 
+                 (graphX - maxDeductibleDollarsAtFifty) * 0.3 * incomeTaxRate;
+      }
+      
+      // Draw tooltip
+      ctx.clearRect(0, 0, canvas.width, padding-5); // Clear top area for tooltip
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'left';
+      ctx.font = 'bold 11px Arial';
+      ctx.fillText(`Income: ${formatCurrency(graphX)}, Deduction: ${formatCurrency(graphY)}`, padding + 5, 15);
+      
+      // Draw a point on the graph to show exact position, but don't show it for negative X values
+      if (graphX >= 0) {
+        ctx.beginPath();
+        ctx.arc(mouseX, mouseY, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#e74c3c';
+        ctx.fill();
+      }
+    }
+  }
+  
+  // Clear tooltip when mouse leaves
+  function handleGraphLeave() {
+    ctx.clearRect(0, 0, canvas.width, padding-5);
+  }
 }
 
 // Function to toggle collapsible sections

@@ -282,13 +282,28 @@
                 Tax deduction limitations
               </h3>
               <div id="deduction-limits-section" style="display: block; margin-top: 16px;">
-                <div style="margin-bottom: 16px; padding: 10px; background-color: #f2f9ff; border: 1px solid #b8daff; border-radius: 4px; color: #004085; display: flex;">
-                  <div style="font-weight: bold; margin-right: 6px; font-size: 0.85rem">Tip:</div>
-                  <div style="font-size: 0.85rem;">If you're only Cashless exercising, and willing to donate "pledge %age of your proceeds" each time you sell (i.e. in the same calendar year that you sell), then you can just do that and ignore the rest of this section.</div>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  The IRS implements tax deductions by reducing your taxable income. In all cases, this means your tax deductions are limited by the total taxes you pay, but for donations, the IRS has stricter limits than that.
+                </p>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  There are two important things to know:
+                </p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
+                  <li>The maximum tax deduction you can get, given your income</li>
+                  <li>The minimum amount of planning you need to do to get that deduction</li>
+                </ul>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  For bullet 1, here is a graph of the max tax deduction, using the share numbers above. The x-axis is the total (household) income you expect over the next 10 years, not including income you get from exercising or selling Anthropic shares. Include both wage income and investment income.
+                </p>
+                
+                <div style="width: 100%; max-width: 600px; height: 300px; margin-bottom: 20px;">
+                  <canvas id="deduction-graph" width="600" height="300"></canvas>
                 </div>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  DAFs are a "50% limit organizations", in the parlance of the IRS. 50% limit organizations have the following tax deduction limits:
+                  DAFs are "50% limit organizations", in the parlance of the IRS. 50% limit organizations have the following tax deduction limits:
                 </p>
                 
                 <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%;">
@@ -414,7 +429,7 @@
                   This is only relevant if you're in the last bullet from the Discussion section.
                 </p>
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  If you expect to fully saturate your 30% deductions, but not your 50% deductions, you can switch your Long Ds to fall under the 50% limit. Here are the deductible 
+                  If you expect to fully saturate your 30% deductions, but not your 50% deductions, you can elect to have your Long Ds fall under the 50% limit. Here are the deductible 
                   amounts under each limit:
                 </p>
                 
@@ -441,22 +456,42 @@
                 </table>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  As you can see, you can deduct (significantly) more under the 30% limit, but that may be small consolation if you expect to fully exhaust the limit. 
-                  If you start switching shares over, you'll want to switch your NSOs before your ISOs.
+                  As you can see, you can deduct (significantly) more under the 30% limit, but that may not be worth much if you expect to fully exhaust the limit.
+                  NSOs that get switched over are worth more than ISOs, so from a planning perspective, if you go this route, you may 
+                  end up donating primarily NSOs in some years, and primarily ISOs in others.
                 </p>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  It's quite possible that whether you convert shares to the 50% rule in a given year will depend on your predictions of the future (e.g. will you have a job? Will the rest of your shares be worth nothing, or a lot?) To some degree you can travel backwards in time, since you can amend prior tax returns within 3 years of when you file (or the April filing date, if you filed early). That means you can amend your 2021 return as late as early April 2025 (!), and possibly later. [d]
+                  An important thing to know is that if you elect to switch your 30% donations to the 50% limit, you must do it for all your 30% donations that year. The election 
+                  applies to all carryover from that year as well, though it doesn't apply to donations initiated in future years. [d] You cannot amend a tax return 
+                  to retroactively change this election, in either direction.
                 </p>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
                   <span style="display: inline-block; min-width: 20px; font-weight: 500;">[d]</span>
-                  I have never actually done this, so maybe run this by an accountant if this ever becomes decision-relevant.
+                  The election also applies to carryovers from past years in some way, though I don't know the details. 
                 </p>
-                <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[d2]</span>
-                  Possibly you're also limited to submitting 3 amended returns per tax year(?) See [d].
-                </p>
+                
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Additional notes</h4>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Other notes</p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
+                  <li>If the charitable deductions would drop you into a significantly lower tax bracket, the calculation of how much you save should be adjusted down (since you're now saving taxes on dollars that are not taxed as heavily). There's no bright line here, but I'd say it starts to come into play if your post-deduction income would be lower than $200-250k per person.</li>
+                  <li>The above may also apply if have high income but more than half of it is from long term capital gains, since the deduction will start eating into income taxed at that lower rate.</li>
+                  <li>The tax treatment of donations is potentially up for renegotiation this year, especially at the federal level. The last time that happened, the limit for cash donations was changed from 50% to 60% for 2018-2025. I don't see evidence that anything more dramatic than that is being considered, but something to double check in 2026.</li>
+                </ul>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Special note for California</p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
+                  <li>CA reduces itemized deductions in general, including charitable deductions, for high income households. If your household income is ~$250k/person or less, it doesn't affect you. Beyond that, it increases your tax bill by ~$700 for every $100k of income.</li>
+                  <li>You can likely cut this penalty in half, if you're married and donating &lt;15% of your household income. It's a bit out of scope for this document, but feel free to DM.</li>
+                </ul>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Important reminders</p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
+                  <li>If you switch tax accountants or tax software, make sure to <span style="font-weight: 600;">copy over your charitable contribution carryovers</span>. Most accountants will not think to ask for it.</li>
+                  <li>Do not donate shares that have lost value (i.e. where sale price &lt; exercise price). Sell the shares and donate the cash. See "Cashflow and risk considerations" for further discussion.</li>
+                </ul>
               </div>
             </div>
             
