@@ -560,20 +560,17 @@ function updateComputationTable() {
   const row3Value = Math.round((shares.cashlessDS + shares.shortDS + shares.longS) * sprain + 
                     shares.nsoD * spread + shares.rsu * salePrice);
   document.getElementById('calc-row3').textContent = '$' + row3Value.toLocaleString();
-  
-  // The piecewise linear graph calculations
-  const maxDeductibleDollarsAtFifty = row2Value + shares.nsoD * exercisePrice + shares.isoD * strikePrice;
-  
+    
   // Calculate row 4: Additional income needed
   const row4Value = Math.round(Math.max((100/30) * row1Value, 2 * (row1Value + row2Value)) - row3Value);
   document.getElementById('calc-row4').textContent = '$' + row4Value.toLocaleString();
   
-  // Update graph with the new values and additional calculations
-  updateDeductionGraph(row1Value, row2Value, row3Value, row4Value, maxDeductibleDollarsAtFifty, incomeTaxRate);
+  // Update graph with the new values and component values for calculations
+  updateDeductionGraph(row1Value, row2Value, row3Value, row4Value, shares.nsoD, shares.isoD, exercisePrice, strikePrice, salePrice, incomeTaxRate);
 }
 
 // Function to draw the deduction graph
-function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFifty, incomeTaxRate) {
+function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice, strikePrice, salePrice, incomeTaxRate) {  
   const canvas = document.getElementById('deduction-graph');
   if (!canvas) return;
   
@@ -588,18 +585,12 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   const graphWidth = canvas.width - padding * 2;
   const graphHeight = canvas.height - padding * 2;
   
-  // For the piecewise linear graph formula
-  // x = additional income, starting at x = max(0, -row3)
-  // First segment: from x=max(0,-row3) to x=maxDeductibleDollarsAtFifty, slope = 0.5*incomeTaxRate
-  // Second segment: from x=maxDeductibleDollarsAtFifty to x=row4, slope = 0.3*incomeTaxRate
-  
-  // Calculate max X as 30% more than Row4 value for drawing graph
-  const maxX = Math.max(row4 > 0 ? row4 * 1.3 : maxDeductibleDollarsAtFifty * 1.5, 100000);
-  
   // Calculate the maximum Y value for scaling
-  // At x=maxDeductibleDollarsAtFifty, y = maxDeductibleDollarsAtFifty * 0.5 * incomeTaxRate
-  // For the second segment, add (row4 - maxDeductibleDollarsAtFifty) * 0.3 * incomeTaxRate
   const maxY = incomeTaxRate * (row1 + row2) * 1.15;
+
+  // Calculate max X as 30% more than Row4 value for drawing graph
+  const maxX = Math.max(row4 > 0 ? row4 * 1.3 : maxY * 1.5, 100000);
+  
   
   // Ensure we have a reasonable minimum scale for Y
   const yScale = Math.max(maxY, 10000);
@@ -636,30 +627,42 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
   // New piecewise linear graph drawing
   ctx.beginPath();
   
+  function lineTo(x, y) {
+    ctx.lineTo(padding + (x / maxX) * graphWidth, canvas.height - padding - (y / yScale) * graphHeight);
+  }
+
   // Start point
   const startX = -row3;
   ctx.moveTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
   
   // First segment endpoint
-  const midX = 2 * maxDeductibleDollarsAtFifty - row3;
-  const midY = maxDeductibleDollarsAtFifty * incomeTaxRate;
-  const midXPos = padding + (midX / maxX) * graphWidth;
-  const midYPos = canvas.height - padding - (midY / yScale) * graphHeight;
-  ctx.lineTo(midXPos, midYPos);
+  const deductibleElectBoth = row2 + nsoD * exercisePrice + isoD * strikePrice;
+  const firstX = deductibleElectBoth / 0.5 - row3;
+  const firstY = deductibleElectBoth * incomeTaxRate;
+  lineTo(firstX, firstY);
   
   // Second segment endpoint
-  const endX = row4
-  const endY = (row1 + row2) * incomeTaxRate;
-  const endXPos = padding + (endX / maxX) * graphWidth;
-  const endYPos = canvas.height - padding - (endY / yScale) * graphHeight;
-  ctx.lineTo(endXPos, endYPos);
+  const secondX = (row2 + nsoD * exercisePrice) / 0.5 + (isoD * salePrice) / 0.3 - row3;
+  const secondY = (row2 + nsoD * exercisePrice + isoD * salePrice) * incomeTaxRate;
+  lineTo(secondX, secondY);
+
+  // Third segment endpoint
+  const thirdX = row2 / 0.5 + (nsoD * salePrice + isoD * salePrice) / 0.3 - row3;
+  const thirdY = (row2 + nsoD * salePrice + isoD * salePrice) * incomeTaxRate;
+  lineTo(thirdX, thirdY);
+
+  if (Math.abs(thirdX - row4) > 0.01) {
+    console.error(`thirdX (${thirdX}) does not equal row4 (${row4})`);
+  }
+  // assert thirdY = (row1 + row2) * incomeTaxRate
+  if (Math.abs(thirdY - (row1 + row2) * incomeTaxRate) > 0.01) {
+    console.error(`thirdY (${thirdY}) does not equal (row1 + row2) * incomeTaxRate (${(row1 + row2) * incomeTaxRate})`);
+  }
   
   // Last segment, till the end
   const lastX = maxX;
-  const lastY = endY
-  const lastXPos = padding + (lastX / maxX) * graphWidth;
-  const lastYPos = canvas.height - padding - (lastY / yScale) * graphHeight;
-  ctx.lineTo(lastXPos, lastYPos);
+  const lastY = thirdY
+  lineTo(lastX, lastY);
 
   // Style and stroke the path
   ctx.strokeStyle = '#0066cc';
@@ -737,10 +740,12 @@ function updateDeductionGraph(row1, row2, row3, row4, maxDeductibleDollarsAtFift
       
       // Calculate Y value based on piecewise function
       let graphY;
-      if (graphX <= midX) {
-        graphY = linearInterpolation(graphX, startX, 0, midX, midY);
-      } else if (graphX <= endX) {
-        graphY = linearInterpolation(graphX, midX, midY, endX, endY);
+      if (graphX <= firstX) {
+        graphY = linearInterpolation(graphX, startX, 0, firstX, firstY);
+      } else if (graphX <= secondX) {
+        graphY = linearInterpolation(graphX, firstX, firstY, secondX, secondY);
+      } else if (graphX <= thirdX) {
+        graphY = linearInterpolation(graphX, secondX, secondY, thirdX, thirdY);      
       } else {
         graphY = endY;
       }
