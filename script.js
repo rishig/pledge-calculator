@@ -632,6 +632,10 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
     ctx.lineTo(leftPadding + (x / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding - (y / yScale) * graphHeight);
   }
 
+  function incomeNeededForDeductions(deductionsSubjectTo50pLimit, deductionsSubjectTo30pLimit) {
+    return Math.max((100/30) * deductionsSubjectTo30pLimit, 2 * (deductionsSubjectTo30pLimit + deductionsSubjectTo50pLimit));
+  }
+
   // Start point
   const startX = -row3;
   ctx.moveTo(leftPadding + (startX / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding);
@@ -642,12 +646,12 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   lineTo(firstX, firstY);
   
   // Second segment endpoint
-  const secondX = (row2 + nsoD * exercisePrice) / 0.5 + (isoD * salePrice) / 0.3 - row3;
+  const secondX = incomeNeededForDeductions(row2 + nsoD * exercisePrice, isoD * salePrice) - row3;
   const secondY = (row2 + nsoD * exercisePrice + isoD * salePrice) * incomeTaxRate;
   lineTo(secondX, secondY);
 
   // Third segment endpoint
-  const thirdX = row2 / 0.5 + (nsoD * salePrice + isoD * salePrice) / 0.3 - row3;
+  const thirdX = incomeNeededForDeductions(row2, nsoD * salePrice + isoD * salePrice) - row3;
   const thirdY = (row2 + nsoD * salePrice + isoD * salePrice) * incomeTaxRate;
   lineTo(thirdX, thirdY);
 
