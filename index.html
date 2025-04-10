@@ -278,10 +278,10 @@
             <!-- Tax deduction limitations Section -->
             <div class="collapsible-section" style="margin-bottom: 24px;">
               <h3 style="font-size: 1.1rem; color: #555; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection('deduction-limits-section')">
-                <span id="deduction-limits-toggle" style="margin-right: 8px; font-size: 0.8em; width: 12px;">&#9660;</span>
-                Tax deduction limitations
+                <span id="deduction-limits-toggle" style="margin-right: 8px; font-size: 0.8em; width: 12px;">&#9654;</span>
+                Tax deduction limitation
               </h3>
-              <div id="deduction-limits-section" style="display: block; margin-top: 16px;">
+              <div id="deduction-limits-section" style="display: none; margin-top: 16px;">
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
                   The IRS implements tax deductions by reducing your taxable income. In all cases, this means your tax deductions are limited by the total taxes you pay, but for donations, the IRS has stricter limits than that.
                 </p>
@@ -321,8 +321,8 @@
                 </p>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  The rest of this section is going to get into the weeds, since it's necessary context if you're going to DIY it.
-                  If you're not, feel free to skip down to "Important reminders" at the end. 
+                  The rest of this section is going to get into the weeds a bit, since it's necessary context if you're going to DIY it.
+                  If you're not, feel free to skip. 
                 </p>
 
                 <h4 style="font-size: 0.95rem; color: #555; margin-top: 20px; margin-bottom: 12px;">Doing the computation</h4>
@@ -423,7 +423,7 @@
                 </table>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  The computations for the other points on the graph are similar. They are <a href="https://github.com/rishig/pledge-calculator/blob/main/script.js" target="_blank">on GitHub</a> for now (search for updateDeductionGraph); 
+                  The computations for the other points on the graph are similar. They are <a href="https://github.com/rishig/pledge-calculator/blob/main/script.js" target="_blank" rel="noopener noreferrer">on GitHub</a> for now (search for updateDeductionGraph); 
                   I can clean it up and add it here if there's interest.
                 </p>
 
@@ -437,7 +437,7 @@
                   amounts under each limit:
                 </p>
                 
-                <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%; max-width: 400px;">
+                <table style="font-size: 0.85rem; margin-bottom: 16px; margin-top: 16px; border-collapse: collapse; width: 100%; max-width: 400px;">
                   <thead>
                     <tr>
                       <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600; font-size: 0.85rem;"></th>
@@ -486,31 +486,22 @@
                 <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Spacing donations out</h4>
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
                   The 5 &lt; Y &lt; 10 case in the intro mentions spacing out your donations. This is because extra donations carry forward for only 5 years,
-                  after which they are lost. I don't have much to say here, but two relevant facts: 
+                  after which they are lost. I don't have much to add, but two relevant facts: 
                 </p>
                 <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
                   <li>You have three years after a sale to make the donation (company rule, not tax law), which should help with this.</li>
                   <li>You always have to use the current year's donations before you can dip into your carryover, even if the carryover is about to expire. 
                     In the extreme case, let's say you make a 10x-your-income donation in year 1. 
                     You would need to delay any further donations till year 7 to get a deduction benefit for them.</li>
+                  <li>You may want to front-load your donations (e.g. start donating this year), to start the clock / take advantage of this year's income.</li>
                 </ul>
             
-                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Additional notes</h4>
-                
-                <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Other notes</p>
-                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
-                  <li>If the charitable deductions would drop you into a significantly lower tax bracket, the calculation of how much you save should be adjusted down (since you're now saving taxes on dollars that are not taxed as heavily). There's no bright line here, but I'd say it starts to come into play if your post-deduction income would be lower than $200-250k per person.</li>
-                  <li>The above may also apply if have high income but more than half of it is from long term capital gains, since the deduction will start eating into income taxed at that lower rate.</li>
-                  <li>The tax treatment of donations is potentially up for renegotiation this year, especially at the federal level. The last time that happened, the limit for cash donations was changed from 50% to 60% for 2018-2025. I don't see evidence that anything more dramatic than that is being considered, but something to double check in 2026.</li>
-                </ul>
-                
-                <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Special note for California</p>
-                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
-                  <li>CA reduces itemized deductions in general, including charitable deductions, for high income households. If your household income is ~$250k/person or less, it doesn't affect you. Beyond that, it increases your tax bill by ~$700 for every $100k of income.</li>
-                  <li>You can likely cut this penalty in half, if you're married and donating &lt;15% of your household income. It's a bit out of scope for this document, but feel free to DM.</li>
-                </ul>
-                
-                <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Important reminders</p>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  In general, a reminder to not let the tax tail wag the impact dog. The benefit of the tax deduction is material, 
+                  but not necessarily enough to outweigh being able to donate earlier, if you have a concrete reason to do so. 
+                </p>
+
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Some reminders</h4>
                 <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
                   <li>If you switch tax accountants or tax software, make sure to <span style="font-weight: 600;">copy over your charitable contribution carryovers</span>. Most accountants will not think to ask for it.</li>
                   <li>Do not donate shares that have lost value (i.e. where sale price &lt; exercise price). Sell the shares and donate the cash. See "Cashflow and risk considerations" for further discussion.</li>
