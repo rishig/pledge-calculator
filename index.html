@@ -302,8 +302,33 @@
                   <canvas id="deduction-graph" width="600" height="300"></canvas>
                 </div>
                 
+                <p style="font-size: 0.85rem; margin-bottom: 10px">
+                  The BLUF for bullet 2, the minimum amount of planning you need, if it'll take Y years to income to get to the flat part of the 
+                  graph (max deduction):
+                </p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 0;">
+                  <li>If your total pre-match donations are less than 1-2x your household income: Nothing special is needed.</li>
+                  <li>If Y &lt; 5: Any time you sell, donate at least your pledge %age in that calendar year.</li>
+                  <li>If 5 &lt; Y &lt; 10: The above, plus space out donations (see below).</li>
+                  <li>If Y &gt; 10: The above, plus you'll need to make and plan around cost basis elections (see below).</li>
+                </ul>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 10px">
+                  Given the complexity of the planning involved when Y &gt; 5, a natural question is "how bad would it be if I only followed the 
+                  relatively simple Y &lt; 5 advice?" I would say: it's not material enough to be relevant for a pledge decision,
+                  but material enough that I'd recommend hiring someone (should cost &lt; $10k/yr) to deal with it 
+                  in the case that your shares are worth enough for this to be a problem.
+                </p>
+
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  DAFs are "50% limit organizations", in the parlance of the IRS. 50% limit organizations have the following tax deduction limits:
+                  The rest of this section is going to get into the weeds, since it's necessary context if you're going to DIY it.
+                  If you're not, feel free to skip down to "Important reminders" at the end. 
+                </p>
+
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 20px; margin-bottom: 12px;">Doing the computation</h4>
+
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                 DAFs are "50% limit organizations", in the parlance of the IRS. 50% limit organizations have the following deduction limits:
                 </p>
                 
                 <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%;">
@@ -324,29 +349,24 @@
                     </tr>
                     <tr>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose 1+ yr after exercise</td>
-                      <td style="padding: 6px 10px; border: 1px solid #ddd;">30% if using sale price, or 50% if using cost basis <a href="#footnotes" style="color: inherit; text-decoration: none;">[b]</a></td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">30% if using sale price, or 50% with cost basis election (see below)</td>
                     </tr>
                   </tbody>
                 </table>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[a]</span>
+                  It's actually 60% federally for 2025 (still 50% for California), but we'll ignore that for now.
+                </p>
+                                                
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
                   Extra donations carry forward for 5 years. So if you make $100k/yr, and donate in cash, you can donate $300k in year 1 (50% * 100k * 6 years), and have it all (eventually) be deducted.
                 </p>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[a]</span>
-                  It's actually 60% federally for 2025 (still 50% for California).
-                </p>
-                
-                <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[b]</span>
-                  See "The cost basis method for NSOs and ISOs" below. For now, and unless otherwise stated, assume we're using the 30% method.
-                </p>
-                
-                <h4 style="font-size: 0.95rem; color: #555; margin-top: 20px; margin-bottom: 12px;">Doing the computation</h4>
-                
-                <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  We'll use the inputs from "Stock Options: Compare Your Options" above, along with the following notation:
+                  In the table below, we show the calculation for the start of the flat part of the graph, i.e. the x value of last "kink" in the graph.                  
+                  (The kink won't be visible, if Row 4 below is &lt; 0.) It uses the inputs from the main "Stock Options" table above, with  
+                  the following notation:
                 </p>
                 
                 <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
@@ -401,35 +421,19 @@
                     </tr>
                   </tbody>
                 </table>
-                
-                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Discussion</h4>
-                <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  I think the right way to think about the number above is "how complicated of a scheme do I need to fully realize the tax deduction"? Some possible schemes, in increasing complexity:
-                </p>
-                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 24px;">
-                  <li>Assume it'll work out. If Row1 + Row2 is less than your annual household income, this is likely to be the case.</li>
-                  <li>Any time you sell, also donate at least your pledge %age in that calendar year. If you're mostly cashless exercising, or have a pledge %age much less than 50%, this is likely to work.</li>
-                  <li>Start the clock right away. Starting Fall 2025, just saturate your 30% and 50% buckets each year, with no further planning.</li>
-                  <li>Ditto, but also expect to fully utilize the "you have 3 years post-liquidity to make the donation" provision to postpone donations on the other end [c].</li>
-                  <li>Switch to the cost basis method for your NSOs, and possibly your ISOs. Likely relevant in worlds where the company does extremely well, and you have a lot of Long D.</li>
-                </ul>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  Once you're in the last bullet, you're no longer getting the full tax deduction, and the calculation in the Stock Options table is no longer correct. 
-                  The tax deduction benefit should instead be something like "(row3 + expected add'l income) * (30 to 50%) * income tax".
+                  The computations for the other points on the graph are similar. They are <a href="https://github.com/rishig/pledge-calculator/blob/main/script.js" target="_blank">on GitHub</a> for now (search for updateDeductionGraph); 
+                  I can clean it up and add it here if there's interest.
                 </p>
 
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Cost basis election for NSOs and ISOs</h4>
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  <span style="display: inline-block; min-width: 20px; font-weight: 500;">[c]</span>
-                  One implementation technicality: you always have to use the current year's donations before you can dip into your carryover, even if the carryover is about to expire. In the extreme case, let's say you make a 10x-your-income donation in year 1. You will need to delay any further donations till year 7 to get a deduction benefit for them.
-                </p>
-                
-                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">The cost basis method for NSOs and ISOs (advanced)</h4>
-                <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  This is only relevant if you're in the last bullet from the Discussion section.
+                  This is only relevant if you're not likely to hit the Row 4 value in the table above. Almost certainly, that means you have some 
+                  Long D, and very likely it means you will end up fully saturating your 30% deductions, but not saturating your 50% deductions. 
                 </p>
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  If you expect to fully saturate your 30% deductions, but not your 50% deductions, you can elect to have your Long Ds fall under the 50% limit. Here are the deductible 
+                  In that scenario, you can elect to have your Long Ds fall under the 50% limit, in exchange for the deductable amount being smaller. Here are the deductible 
                   amounts under each limit:
                 </p>
                 
@@ -443,12 +447,12 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td style="padding: 6px 10px; border: 1px solid #ddd;">NSO</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Long NSO</td>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Sale price</td>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Exercise price</td>
                     </tr>
                     <tr>
-                      <td style="padding: 6px 10px; border: 1px solid #ddd;">ISO</td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">Long ISO</td>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Sale price</td>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Strike price</td>
                     </tr>
@@ -456,14 +460,13 @@
                 </table>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  As you can see, you can deduct (significantly) more under the 30% limit, but that may not be worth much if you expect to fully exhaust the limit.
-                  NSOs that get switched over are worth more than ISOs, so from a planning perspective, if you go this route, you may 
-                  end up donating primarily NSOs in some years, and primarily ISOs in others.
+                   As you can see, NSOs that get switched over are worth more than ISOs, which is why the graph above suggests switching over NSOs before
+                    switching over ISOs.
                 </p>
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                  An important thing to know is that if you elect to switch your 30% donations to the 50% limit, you must do it for all your 30% donations that year. The election 
-                  applies to all carryover from that year as well, though it doesn't apply to donations initiated in future years. [d] You cannot amend a tax return 
+                  An important note is that if you elect to switch your 30% donations to the 50% limit, you must do it for all your 30% donations that year. The election 
+                  also applies to all carryover from that year, though it doesn't apply to donations initiated in future years. [d] You cannot amend a tax return 
                   to retroactively change this election, in either direction.
                 </p>
                 
@@ -472,6 +475,26 @@
                   The election also applies to carryovers from past years in some way, though I don't know the details. 
                 </p>
                 
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  If you expect to end up in this situation, the planning implications are a bit complicated. It may imply that you donate only NSOs 
+                  or only ISOs in a particular year, or that you don't bother early exercising shares that you're exercising only to donate.
+                  Some simplifying observations: it's still basically always better to exercise ISOs (vs NSOs) if you have the choice. And Short 
+                  donations are still (far) worse than Long donations, even with the election, since even though the deduction is the same, 
+                  with Short donations you own taxes on the gain.
+                </p>
+
+                <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Spacing donations out</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                  The 5 &lt; Y &lt; 10 case in the intro mentions spacing out your donations. This is because extra donations carry forward for only 5 years,
+                  after which they are lost. I don't have much to say here, but two relevant facts: 
+                </p>
+                <ul style="font-size: 0.85rem; padding-left: 20px; margin-bottom: 16px;">
+                  <li>You have three years after a sale to make the donation (company rule, not tax law), which should help with this.</li>
+                  <li>You always have to use the current year's donations before you can dip into your carryover, even if the carryover is about to expire. 
+                    In the extreme case, let's say you make a 10x-your-income donation in year 1. 
+                    You would need to delay any further donations till year 7 to get a deduction benefit for them.</li>
+                </ul>
+            
                 <h4 style="font-size: 0.95rem; color: #555; margin-top: 24px; margin-bottom: 12px;">Additional notes</h4>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Other notes</p>

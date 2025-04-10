@@ -636,9 +636,8 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   ctx.moveTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
   
   // First segment endpoint
-  const deductibleElectBoth = row2 + nsoD * exercisePrice + isoD * strikePrice;
-  const firstX = deductibleElectBoth / 0.5 - row3;
-  const firstY = deductibleElectBoth * incomeTaxRate;
+  const firstX = (row2 + nsoD * exercisePrice + isoD * strikePrice) / 0.5 - row3;
+  const firstY = (row2 + nsoD * exercisePrice + isoD * strikePrice) * incomeTaxRate;
   lineTo(firstX, firstY);
   
   // Second segment endpoint
@@ -740,22 +739,29 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
       
       // Calculate Y value based on piecewise function
       let graphY;
-      if (graphX <= firstX) {
+      let segmentText;
+      if (graphX < firstX) {
         graphY = linearInterpolation(graphX, startX, 0, firstX, firstY);
-      } else if (graphX <= secondX) {
+        segmentText = `Cost basis election: NSO: ${nsoD} shares (all), ISO: ${isoD} shares (all)`;
+      } else if (graphX < secondX) {
         graphY = linearInterpolation(graphX, firstX, firstY, secondX, secondY);
-      } else if (graphX <= thirdX) {
+        segmentText = `Cost basis election: NSO: ${nsoD} shares (all), ISO: ${Math.round(isoD * (secondX - graphX) / (secondX - firstX))} shares`;
+      } else if (graphX < thirdX) {
         graphY = linearInterpolation(graphX, secondX, secondY, thirdX, thirdY);      
+        segmentText = `Cost basis election: NSO: ${Math.round(nsoD * (thirdX - graphX) / (thirdX - secondX))} shares, ISO: none`;
       } else {
-        graphY = endY;
+        graphY = lastY;
+        segmentText = 'Cost basis election: NSO: none, ISO: none';
       }
-      
-      // Draw tooltip
-      ctx.clearRect(0, 0, canvas.width, padding-5); // Clear top area for tooltip
+     
+      // Draw tooltip with multiple lines
+      ctx.clearRect(0, 0, canvas.width, padding+10); // Clear top area for tooltip
       ctx.fillStyle = '#333';
       ctx.textAlign = 'left';
       ctx.font = 'bold 11px Arial';
       ctx.fillText(`Income: ${formatCurrency(Math.round(graphX/1000))}K, Max deduction: ${formatCurrency(Math.round(graphY/1000))}K`, padding + 5, 15);
+      ctx.font = '10px Arial'; 
+      ctx.fillText(segmentText, padding + 5, 30);
       
       // // Draw a point on the graph to show exact position, but don't show it for negative X values
       // if (graphX >= 0) {
