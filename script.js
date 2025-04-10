@@ -582,6 +582,7 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   
   // Set graph dimensions
   const padding = 40;
+  const leftPadding = 55; // Increase left padding to avoid y-label overlap
   const graphWidth = canvas.width - padding * 2;
   const graphHeight = canvas.height - padding * 2;
   
@@ -597,8 +598,8 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   
   // Draw axes
   ctx.beginPath();
-  ctx.moveTo(padding, padding);
-  ctx.lineTo(padding, canvas.height - padding);
+  ctx.moveTo(leftPadding, padding);
+  ctx.lineTo(leftPadding, canvas.height - padding);
   ctx.lineTo(canvas.width - padding, canvas.height - padding);
   ctx.strokeStyle = '#333';
   ctx.lineWidth = 1;
@@ -621,19 +622,19 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   // Create a clipping region that prevents drawing when X < 0
   ctx.save();
   ctx.beginPath();
-  ctx.rect(padding, padding, graphWidth, graphHeight);
+  ctx.rect(leftPadding, padding, graphWidth - (leftPadding - padding), graphHeight);
   ctx.clip();
   
   // New piecewise linear graph drawing
   ctx.beginPath();
   
   function lineTo(x, y) {
-    ctx.lineTo(padding + (x / maxX) * graphWidth, canvas.height - padding - (y / yScale) * graphHeight);
+    ctx.lineTo(leftPadding + (x / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding - (y / yScale) * graphHeight);
   }
 
   // Start point
   const startX = -row3;
-  ctx.moveTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
+  ctx.moveTo(leftPadding + (startX / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding);
   
   // First segment endpoint
   const firstX = (row2 + nsoD * exercisePrice + isoD * strikePrice) / 0.5 - row3;
@@ -669,8 +670,8 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   ctx.stroke();
   
   // Fill the area under the curve
-  ctx.lineTo(padding + graphWidth, canvas.height - padding);
-  ctx.lineTo(padding + (startX / maxX) * graphWidth, canvas.height - padding);
+  ctx.lineTo(canvas.width - padding, canvas.height - padding);
+  ctx.lineTo(leftPadding + (startX / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding);
   ctx.fillStyle = 'rgba(0, 102, 204, 0.1)';
   ctx.fill();
   
@@ -691,7 +692,7 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   ctx.font = '10px Arial';
   ctx.fillStyle = '#333';
   for (let i = 0; i <= 5; i++) {
-    const x = padding + (i / 5) * graphWidth;
+    const x = leftPadding + (i / 5) * (graphWidth - (leftPadding - padding));
     const value = (i / 5) * maxX;
     ctx.beginPath();
     ctx.moveTo(x, canvas.height - padding);
@@ -705,11 +706,11 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
     const y = canvas.height - padding - (i / 4) * graphHeight;
     const value = (i / 4) * yScale;
     ctx.beginPath();
-    ctx.moveTo(padding, y);
-    ctx.lineTo(padding - 5, y);
+    ctx.moveTo(leftPadding, y);
+    ctx.lineTo(leftPadding - 5, y);
     ctx.stroke();
     ctx.textAlign = 'right';
-    ctx.fillText(formatAxisValue(value), padding - 8, y + 4);
+    ctx.fillText(formatAxisValue(value), leftPadding - 8, y + 4);
   }
   
   // Remove any previous event listeners to prevent duplicates
@@ -731,27 +732,50 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
     const mouseY = event.clientY - rect.top;
     
     // Only activate when within graph bounds
-    if (mouseX >= padding && mouseX <= canvas.width - padding &&
+    if (mouseX >= leftPadding && mouseX <= canvas.width - padding &&
         mouseY >= padding && mouseY <= canvas.height - padding) {
       
       // Convert mouse position to graph coordinates
-      const graphX = ((mouseX - padding) / graphWidth) * maxX;
+      const graphX = ((mouseX - leftPadding) / (graphWidth - (leftPadding - padding))) * maxX;
       
       // Calculate Y value based on piecewise function
       let graphY;
-      let segmentText;
+      let segmentText = '';
+      
+      // Calculate the Y value first
       if (graphX < firstX) {
         graphY = linearInterpolation(graphX, startX, 0, firstX, firstY);
-        segmentText = `Cost basis election: NSO: ${nsoD} shares (all), ISO: ${isoD} shares (all)`;
       } else if (graphX < secondX) {
         graphY = linearInterpolation(graphX, firstX, firstY, secondX, secondY);
-        segmentText = `Cost basis election: NSO: ${nsoD} shares (all), ISO: ${Math.round(isoD * (secondX - graphX) / (secondX - firstX))} shares`;
       } else if (graphX < thirdX) {
-        graphY = linearInterpolation(graphX, secondX, secondY, thirdX, thirdY);      
-        segmentText = `Cost basis election: NSO: ${Math.round(nsoD * (thirdX - graphX) / (thirdX - secondX))} shares, ISO: none`;
+        graphY = linearInterpolation(graphX, secondX, secondY, thirdX, thirdY);
       } else {
         graphY = lastY;
-        segmentText = 'Cost basis election: NSO: none, ISO: none';
+      }
+      
+      // Only show cost basis election if we have long-term donated shares      
+      if (nsoD > 0 || isoD > 0) {
+        const haveBoth = nsoD > 0 && isoD > 0;
+        if (graphX < firstX) {
+          segmentText = haveBoth 
+            ? `NSO: ${nsoD} shares (all), ISO: ${isoD} shares (all)` 
+            : `${nsoD + isoD} shares (all)`;
+        } else if (graphX < secondX && isoD > 0) {
+          const isoShares = Math.round(isoD * (secondX - graphX) / (secondX - firstX));
+          segmentText = haveBoth
+            ? `NSO: ${nsoD} shares (all), ISO: ${isoShares} shares`
+            : `${isoShares} shares`; 
+        } else if (graphX < thirdX && nsoD > 0) {          
+          const nsoShares = Math.round(nsoD * (thirdX - graphX) / (thirdX - secondX));
+          segmentText = haveBoth
+            ? `NSO: ${nsoShares} shares, ISO: none`
+            : `${nsoShares} shares`;
+        } else {
+          segmentText = haveBoth
+            ? `NSO: none, ISO: none`
+            : `none`;
+        }
+        segmentText = `Cost basis election: ${segmentText}`;
       }
      
       // Draw tooltip with multiple lines
@@ -759,9 +783,13 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
       ctx.fillStyle = '#333';
       ctx.textAlign = 'left';
       ctx.font = 'bold 11px Arial';
-      ctx.fillText(`Income: ${formatCurrency(Math.round(graphX/1000))}K, Max deduction: ${formatCurrency(Math.round(graphY/1000))}K`, padding + 5, 15);
-      ctx.font = '10px Arial'; 
-      ctx.fillText(segmentText, padding + 5, 30);
+      ctx.fillText(`Income: ${formatCurrency(Math.round(graphX/1000))}K, Max deduction: ${formatCurrency(Math.round(graphY/1000))}K`, leftPadding + 5, 15);
+      
+      // Only show second line if we have segment text
+      if (segmentText) {
+        ctx.font = '10px Arial'; 
+        ctx.fillText(segmentText, leftPadding + 5, 30);
+      }
       
       // // Draw a point on the graph to show exact position, but don't show it for negative X values
       // if (graphX >= 0) {
