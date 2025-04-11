@@ -284,7 +284,7 @@ function updateTotals() {
   
   // Add [3] to the tax deduction total if there's a value
   if (deductionTotal > 0) {
-    totalDeduction.innerHTML = `<div class="value">${formatCurrency(deductionTotal)} <a href="#footnotes" style="color: inherit; text-decoration: none;">[3]</a></div>`;
+    totalDeduction.innerHTML = `<div class="value">${formatCurrency(deductionTotal)} <a href="#footnotes">[3]</a></div>`;
   } else {
     totalDeduction.innerHTML = '';
   }
