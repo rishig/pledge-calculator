@@ -557,8 +557,8 @@ function updateComputationTable() {
   document.getElementById('calc-row2').textContent = '$' + row2Value.toLocaleString();
   
   // Calculate row 3: Income generated from exercise and sale
-  const row3Value = Math.round((shares.cashlessDS + shares.shortDS + shares.longS) * sprain + 
-                    shares.nsoD * spread + shares.rsu * salePrice);
+  const row3Value = Math.round((shares.cashlessDS + shares.shortS + shares.longS) * sprain + 
+                    (shares.shortD + shares.nsoD) * spread + shares.rsu * salePrice);
   document.getElementById('calc-row3').textContent = '$' + row3Value.toLocaleString();
     
   // Calculate row 4: Additional income needed
