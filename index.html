@@ -189,10 +189,10 @@
               <div class="grid-cell">ISO or NSO</div>
               <div class="grid-cell">Dispose &lt;1 yr after exercise</div>
               <div class="grid-cell">Donate</div>
-              <div class="grid-cell">income tax * sprain</div>
-              <div class="grid-cell">sale price * (1 + match)</div>
-              <div class="grid-cell">- strike price - income tax * sprain</div>
-              <div class="grid-cell">exercise price * income tax</div>
+              <div class="grid-cell" data-formula="income tax * spread">income tax * spread <a href="#footnotes" >[4]</a></div>
+              <div class="grid-cell" data-formula="sale price * (1 + match)">sale price * (1 + match)</div>
+              <div class="grid-cell" data-formula="- strike price - income tax * spread">- strike price - income tax * spread</div>
+              <div class="grid-cell" data-formula="exercise price * income tax">exercise price * income tax</div>
               <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
               <!-- Row 5 - ISO Sell -->
@@ -209,7 +209,7 @@
               <div class="grid-cell">ISO</div>
               <div class="grid-cell">Dispose 1+ yr after exercise</div>
               <div class="grid-cell">Donate</div>
-              <div class="grid-cell">amt * spread <a href="#footnotes" >[4]</a></div>
+              <div class="grid-cell">amt * spread <a href="#footnotes" >[5]</a></div>
               <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price</div>
               <div class="grid-cell">sale price * income tax</div>
@@ -555,25 +555,39 @@
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[3]</span>
               The actual deduction could be significantly less, especially if the company does well, and you donate ISOs or NSOs you hold for longer than a year. 
-              See the <a href="#tax-deduction-limitation" onclick="toggleSection('deduction-limits-section')">tax deduction limitation</a> section for a handy graph. A few additional more minor caveats:
+              See the <a href="#tax-deduction-limitation" onclick="toggleSection('deduction-limits-section')">tax deduction limitation</a> section for a handy graph. A few additional caveats:
               <ul style="padding-left: 16px; margin-top: -8px; margin-bottom: 0; font-size: 0.85rem;">
                 <li>If you would normally take the standard deduction, subtract $2-3k (single) or $7-9k (married) per year that you donate, since you give up on the standard deduction when you take this one.</li>
                 <li>If you live in California and have high income, subtract $700 per $100k you make above $250k (single) or $500k (married) per year that you donate (see "Reduction in itemized deductions" <a href="https://www.caltax.com/spidellweb/public/editorial/cat/1024-tax-rates-2024.pdf" target="_blank" rel="noopener noreferrer">here</a>).</li>
+                <li>SALT is deductible under regular income, but not under AMT, and the marginal AMT tax due to the SALT adjustment does not result in credits (see 
+                  the treatment of exclusion items vs deferral items in <a href="https://www.irs.gov/instructions/i8801" target="_blank" rel="noopener noreferrer">Form 8801</a>). So if exercising ISOs pushes you into paying AMT at all, you'll likely end up with an unrecoverable tax bill of $3-4k each year you pay AMT.
+                </li>
               </ul>
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[4]</span>
-              This deserves its own calculator, but at a high level, each year you work and have a "normal" tax situation you generate tens of thousands of "AMT credits". Ignoring questions of cash flow, you only end up paying AMT if your (lifetime, post-year-of-exercise) AMT credits don't cover the AMT you owe. 
-              For now, I've excluded AMT from Totals, and haven't subtracted it from "what you get in cash".
+              I am not sure if you also owe AMT on the ISOs, in some cases. If you do, the amount of AMT will be "amt * spread"
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[5]</span>
-              It's actually 60% federally for 2025 (still 50% for California).
+              This deserves its own calculator, but at a high level, each year you work and have a "normal" tax situation you generate tens of thousands of "AMT credits". Ignoring questions of cash flow, you only end up paying AMT if your (lifetime, post-year-of-exercise) AMT credits don't cover the AMT you owe.               
+              For now, I've excluded AMT from Totals, and haven't subtracted it from "what you get in cash", even though you are likely to owe lifetime AMT 
+              in worlds where the company does well and you donate a large fraction of your shares.
+              Also, AMT rates range from 26% to 42%, depending on your income and state; I arbitrarily used 35% here. 
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[6]</span>
+              It's actually 60% federally for 2025 (still 50% for California).
+            </p>
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[7]</span>
               The election also applies to carryovers from past years in some way, though I don't know the details.
             </p>
+            
+            <p style="font-size: 0.85rem; margin-top: 24px; margin-bottom: 12px; font-weight: 500;">Errata</p>
+            <ul style="font-size: 0.85rem; padding-left: 16px; margin-top: -8px; margin-bottom: 0px;">
+              <li>4/11/25: Updated taxes paid on short term ISO and NSO donations to "income tax * spread", from "income tax * sprain". The affected the "Government gets" and the "You get in cash" columns. Thanks @peter for the catch!</li>
+            </ul>
           </div>
         </div>
       </div>
