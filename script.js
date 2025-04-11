@@ -568,7 +568,12 @@ function updateComputationTable() {
   // Also update the reference in the text
   const row4RefElement = document.getElementById('calc-row4-ref');
   if (row4RefElement) {
-    row4RefElement.textContent = row4Value.toLocaleString();  
+    // Format the same way we do for graph axes - in M or K
+    if (row4Value >= 1000000) {
+      row4RefElement.textContent = (row4Value / 1000000).toFixed(1) + 'M';  
+    } else {
+      row4RefElement.textContent = (row4Value / 1000).toFixed(0) + 'K';
+    }
   }
   
   // Update graph with the new values and component values for calculations
