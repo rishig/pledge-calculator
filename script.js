@@ -565,6 +565,12 @@ function updateComputationTable() {
   const row4Value = Math.round(Math.max((100/30) * row1Value, 2 * (row1Value + row2Value)) - row3Value);
   document.getElementById('calc-row4').textContent = '$' + row4Value.toLocaleString();
   
+  // Also update the reference in the text
+  const row4RefElement = document.getElementById('calc-row4-ref');
+  if (row4RefElement) {
+    row4RefElement.textContent = row4Value.toLocaleString();  
+  }
+  
   // Update graph with the new values and component values for calculations
   updateDeductionGraph(row1Value, row2Value, row3Value, row4Value, shares.nsoD, shares.isoD, exercisePrice, strikePrice, salePrice, incomeTaxRate);
 }
