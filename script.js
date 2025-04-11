@@ -570,6 +570,10 @@ function updateComputationTable() {
 }
 
 // Function to draw the deduction graph
+// row1: Deductions subject to 30% max
+// row2: Deductions subject to 50% max
+// row3: Income generated from exercise and sale of company shares
+// row4: Additional income needed to maximize deduction. Only used for error checking and determining the scale of the graph
 function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice, strikePrice, salePrice, incomeTaxRate) {  
   const canvas = document.getElementById('deduction-graph');
   if (!canvas) return;
@@ -591,7 +595,6 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
 
   // Calculate max X as 30% more than Row4 value for drawing graph
   const maxX = Math.max(row4 > 0 ? row4 * 1.3 : maxY * 1.5, 100000);
-  
   
   // Ensure we have a reasonable minimum scale for Y
   const yScale = Math.max(maxY, 10000);
@@ -640,17 +643,17 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   const startX = -row3;
   ctx.moveTo(leftPadding + (startX / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding);
   
-  // First segment endpoint
+  // First segment endpoint. Below this, we make the cost basis election for all ISOs and NSOs.
   const firstX = (row2 + nsoD * exercisePrice + isoD * strikePrice) / 0.5 - row3;
   const firstY = (row2 + nsoD * exercisePrice + isoD * strikePrice) * incomeTaxRate;
   lineTo(firstX, firstY);
   
-  // Second segment endpoint
+  // Second segment endpoint. Below this, we make the cost basis election for all NSOs and some ISOs.
   const secondX = incomeNeededForDeductions(row2 + nsoD * exercisePrice, isoD * salePrice) - row3;
   const secondY = (row2 + nsoD * exercisePrice + isoD * salePrice) * incomeTaxRate;
   lineTo(secondX, secondY);
 
-  // Third segment endpoint
+  // Third segment endpoint. Below this, we make the cost basis election for some NSOs and no ISOs.
   const thirdX = incomeNeededForDeductions(row2, nsoD * salePrice + isoD * salePrice) - row3;
   const thirdY = (row2 + nsoD * salePrice + isoD * salePrice) * incomeTaxRate;
   lineTo(thirdX, thirdY);
@@ -658,12 +661,11 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   if (Math.abs(thirdX - row4) > 0.01) {
     console.error(`thirdX (${thirdX}) does not equal row4 (${row4})`);
   }
-  // assert thirdY = (row1 + row2) * incomeTaxRate
   if (Math.abs(thirdY - (row1 + row2) * incomeTaxRate) > 0.01) {
     console.error(`thirdY (${thirdY}) does not equal (row1 + row2) * incomeTaxRate (${(row1 + row2) * incomeTaxRate})`);
   }
   
-  // Last segment, till the end
+  // Last segment, till the end. Here we do not make any cost basis election.
   const lastX = maxX;
   const lastY = thirdY
   lineTo(lastX, lastY);
