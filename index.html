@@ -290,8 +290,11 @@
                   Here is a graph of the maximum tax deduction you can expect, using the share numbers above. The x-axis is the total (household) income you expect over the next 10 years, not including income you get from exercising or selling company shares. Include both wage income and investment income.
                 </p>
                 
-                <div style="width: 100%; max-width: 600px; height: 300px; margin-bottom: 20px;">
+                <div style="width: 100%; max-width: 600px; height: 300px; margin-bottom: 20px; position: relative;">
                   <canvas id="deduction-graph" width="600" height="300"></canvas>
+                  <div id="no-donations-message" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px; font-weight: normal; text-align: center; font-size: 0.85rem; color: #666;">
+                    Add some information (in particular, a non-zero number of donations) into the table above!
+                  </div>
                 </div>
 
                 <p style="font-size: 0.85rem; margin-bottom: 10px">

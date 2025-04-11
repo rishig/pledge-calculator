@@ -121,7 +121,7 @@ function calculateFormulaValue(formula) {
     result = incomeTaxRate * spread + ltcgRate * gain;
   } else if (formula === '(1 - income tax) * spread + (1 - ltcg) * gain') {
     result = (1 - incomeTaxRate) * spread + (1 - ltcgRate) * gain;
-  } else if (formula === 'income tax * spread') {
+  } else if (formula.startsWith('income tax * spread')) {
     result = incomeTaxRate * spread;
   } else if (formula === '- strike price - income tax * spread') {
     // Negative of strike price minus income tax * spread
@@ -591,6 +591,13 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  
+  // Check if there are any donations (max deduction would be > 0)
+  const noData = row1 + row2 <= 0;
+  const noDataMessage = document.getElementById('no-donations-message');
+  if (noDataMessage) {
+    noDataMessage.style.display = noData ? 'block' : 'none';
+  }
   
   // Clear previous graph
   ctx.clearRect(0, 0, canvas.width, canvas.height);
