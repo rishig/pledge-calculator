@@ -255,19 +255,63 @@
               <div class="grid-cell totals-cell" id="total-shares"></div>
             </div>
             
-            <!-- Summary Lines - Outside Grid -->
-            <div style="display: flex; flex-direction: column; margin-top: 20px; margin-left: auto; width: 100%; max-width: 600px; align-items: flex-end;">
-              <div style="display: flex; margin-bottom: 8px; justify-content: flex-end;">
-                <div style="font-weight: 500; font-size: 0.95rem; text-align: right; margin-right: 4px;">Total to charity:</div>
-                <div id="total-to-charity" style="font-weight: 500; font-size: 0.95rem; width: 100px; text-align: right;"></div>
+            <!-- Summary and Spreadsheet Link Line -->
+            <div style="display: flex; margin-top: 20px; margin-bottom: 32px; width: 100%; justify-content: space-between; align-items: flex-start;">
+              <!-- Spreadsheet Link -->
+              <div style="font-size: 0.85rem;">
+                Also available <a href="https://docs.google.com/spreadsheets/d/1Q-78IZw9qGZB8evrbqTUSdgFulAuGDSN9ti6ctZrFzQ/edit" target="_blank" rel="noopener noreferrer">as a spreadsheet</a>.
               </div>
-              <div style="display: flex; justify-content: flex-end;">
-                <div style="font-weight: 500; font-size: 0.95rem; text-align: right; margin-right: 4px;">Total to you (cash + deduction):</div>
-                <div id="total-to-you" style="font-weight: 500; font-size: 0.95rem; width: 100px; text-align: right;"></div>
+              
+              <!-- Summary Lines - Outside Grid -->
+              <div style="display: flex; flex-direction: column; width: 100%; max-width: 600px; align-items: flex-end;">
+                <div style="display: flex; margin-bottom: 8px; justify-content: flex-end;">
+                  <div style="font-weight: 500; font-size: 0.95rem; text-align: right; margin-right: 4px;">Total to charity:</div>
+                  <div id="total-to-charity" style="font-weight: 500; font-size: 0.95rem; width: 100px; text-align: right;"></div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                  <div style="font-weight: 500; font-size: 0.95rem; text-align: right; margin-right: 4px;">Total to you (cash + deduction):</div>
+                  <div id="total-to-you" style="font-weight: 500; font-size: 0.95rem; width: 100px; text-align: right;"></div>
+                </div>
               </div>
             </div>
           </div>
-          <div style="margin-top: 16px; font-size: 0.85rem;">Also available <a href="https://docs.google.com/spreadsheets/d/1Q-78IZw9qGZB8evrbqTUSdgFulAuGDSN9ti6ctZrFzQ/edit" target="_blank" rel="noopener noreferrer">as a spreadsheet</a>.</div>
+          
+          <!-- Donation Multipliers Section -->
+          <div class="field-container">
+            <div class="label-container">
+              <label style="font-weight: 500;">Donation multipliers</label>
+              <div class="description">
+                How many dollars go to charity for each dollar you forgo, in each category. 
+                The computation here is "(Total to charity if Donate) / (Total to you if Sell - Total to you if Donate)" in each category.                
+              </div>
+            </div>
+          </div>
+          <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%; max-width: 600px;">
+            <thead>
+              <tr>
+                <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600;">Scenario</th>
+                <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600;">Donation multiplier</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;">Cashless exercise during liquidity</td>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose &lt;1 yr after exercise</td>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;">ISO: Dispose &gt;1 yr after exercise</td>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;">NSO: Dispose &gt;1 yr after exercise</td>
+                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         
         <hr>
