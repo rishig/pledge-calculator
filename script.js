@@ -468,6 +468,7 @@ function initializeTable() {
 function handleNumberInput(event) {
   calculateTaxes();
   updateComputationTable();
+  updateDonationMultipliers();
 }
 
 // Add event listeners
@@ -484,7 +485,10 @@ incomeTaxRateInput.addEventListener('input', updateExerciseCostNotes);
 
 // Add event listeners for match radio buttons
 matchRadios.forEach(radio => {
-  radio.addEventListener('change', calculateTaxes);
+  radio.addEventListener('change', function() {
+    calculateTaxes();
+    updateDonationMultipliers();
+  });
 });
 
 // Function to extract share counts from the table
@@ -831,9 +835,64 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   }
 }
 
-// Placeholder for donation multipliers function (to be explained later)
+// Function to calculate and update donation multipliers
 function updateDonationMultipliers() {
-  // This function will be implemented later
+  // Get the input values
+  const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
+  const ltcgRate = parseInputAsNumber(ltcgRateInput) / 100;
+  const strikePrice = parseInputAsNumber(strikePriceInput);
+  const exercisePrice = parseInputAsNumber(exercisePriceInput);
+  const salePrice = parseInputAsNumber(salePriceInput);
+  const matchMultiplier = getMatchMultiplier();
+  
+  // Calculate basic values
+  const spread = exercisePrice - strikePrice;
+  const gain = salePrice - exercisePrice;
+  const sprain = salePrice - strikePrice;
+  
+  // Get the multiplier table cells (make sure we're selecting from the donation multipliers table)
+  const donationTable = document.querySelector(".field-container + table");
+  if (!donationTable) return;
+  
+  const cashlessMultiplierCell = donationTable.querySelector("tbody tr:nth-child(1) td:nth-child(2) .value");
+  const shortMultiplierCell = donationTable.querySelector("tbody tr:nth-child(2) td:nth-child(2) .value");
+  const isoLongMultiplierCell = donationTable.querySelector("tbody tr:nth-child(3) td:nth-child(2) .value");
+  const nsoLongMultiplierCell = donationTable.querySelector("tbody tr:nth-child(4) td:nth-child(2) .value");
+  
+  // Get the combined multiplier cell
+  const combinedMultiplierCell = document.getElementById("combined-multiplier");
+  
+  // Calculate each multiplier
+  
+  // 1. Cashless exercise
+  // Formula: (1 + match) / (1 - income tax)
+  const cashlessMultiplier = (1 + matchMultiplier) / (1 - incomeTaxRate);
+  
+  // 2. Dispose <1 yr after exercise
+  // Formula: (1 + match) / (1 - income tax)
+  const shortMultiplier = (1 + matchMultiplier) / (1 - incomeTaxRate);
+  
+  // 3. ISO: Dispose >1 yr after exercise
+  // Formula: (1 + match) * sale price / [sale price * (1 - income tax) - sprain * ltcg]
+  const isoLongMultiplier = (1 + matchMultiplier) * salePrice / 
+    (salePrice * (1 - incomeTaxRate) - sprain * ltcgRate);
+  
+  // 4. NSO: Dispose >1 yr after exercise
+  // Formula: (1 + match) * sale price / [sale price * (1 - income tax) - gain * ltcg]
+  const nsoLongMultiplier = (1 + matchMultiplier) * salePrice / 
+    (salePrice * (1 - incomeTaxRate) - gain * ltcgRate);
+  
+  // Calculate the combined multiplier (Cashless to ISO 1+ yr)
+  // Formula: (1 + match) * sale / [sale * (1 - income tax) - sprain * income tax]
+  const combinedMultiplier = (1 + matchMultiplier) * salePrice / 
+    (salePrice * (1 - incomeTaxRate) - sprain * incomeTaxRate);
+  
+  // Format and display the multipliers (rounded to 1 decimal place)
+  if (cashlessMultiplierCell) cashlessMultiplierCell.textContent = cashlessMultiplier.toFixed(1) + 'x';
+  if (shortMultiplierCell) shortMultiplierCell.textContent = shortMultiplier.toFixed(1) + 'x';
+  if (isoLongMultiplierCell) isoLongMultiplierCell.textContent = isoLongMultiplier.toFixed(1) + 'x';
+  if (nsoLongMultiplierCell) nsoLongMultiplierCell.textContent = nsoLongMultiplier.toFixed(1) + 'x';
+  if (combinedMultiplierCell) combinedMultiplierCell.textContent = combinedMultiplier.toFixed(1) + 'x';
 }
 
 // Function to toggle collapsible sections
@@ -864,4 +923,5 @@ window.addEventListener('DOMContentLoaded', function() {
   
   calculateTaxes();
   updateComputationTable();
+  updateDonationMultipliers();
 });

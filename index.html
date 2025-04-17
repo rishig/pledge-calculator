@@ -9,6 +9,48 @@
     <meta property="og:image" content="https://pledge-calculator.onrender.com/screenshot.png" />
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="donation-calculator-favicon.svg">
+    <style>
+      .formula {
+        font-size: 0.8em;
+        color: #666;
+        margin-bottom: 4px;
+      }
+      .value {
+        font-weight: 500;
+        color: #333;
+        padding-left: 8px;
+      }
+      .multiplier-table {
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 600px;
+      }
+      .multiplier-cell-left {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        width: 40%;
+      }
+      .multiplier-cell-right {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        width: 60%;
+      }
+      .multiplier-header {
+        padding: 10px 8px;
+        border: 1px solid #ddd;
+        background-color: #f0f0f0;
+        text-align: left;
+        font-weight: 600;
+      }
+      .multiplier-header-left {
+        width: 40%;
+      }
+      .multiplier-header-right {
+        width: 60%;
+      }
+    </style>
   </head>
   <body>
     <div id="root">
@@ -286,29 +328,57 @@
               </div>
             </div>
           </div>
-          <table style="font-size: 0.85rem; margin-bottom: 16px; border-collapse: collapse; width: 100%; max-width: 600px;">
+          <table class="multiplier-table">
             <thead>
               <tr>
-                <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600;">Scenario</th>
-                <th style="padding: 10px 8px; border: 1px solid #ddd; background-color: #f0f0f0; text-align: left; font-weight: 600;">Donation multiplier</th>
+                <th class="multiplier-header multiplier-header-left">Holding period</th>
+                <th class="multiplier-header multiplier-header-right">Donation multiplier</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;">Cashless exercise during liquidity</td>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+                <td class="multiplier-cell-left">Cashless exercise during liquidity</td>
+                <td class="multiplier-cell-right">
+                  <div class="formula">(1 + match) / (1 - income tax)</div>
+                  <div class="value"></div>
+                </td>
               </tr>
               <tr>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose &lt;1 yr after exercise</td>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+                <td class="multiplier-cell-left">Dispose &lt;1 yr after exercise</td>
+                <td class="multiplier-cell-right">
+                  <div class="formula">(1 + match) / (1 - income tax)</div>
+                  <div class="value"></div>
+                </td>
               </tr>
               <tr>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;">ISO: Dispose &gt;1 yr after exercise</td>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+                <td class="multiplier-cell-left">ISO: Dispose 1+ yr after exercise</td>
+                <td class="multiplier-cell-right">
+                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - sprain * ltcg]</div>
+                  <div class="value"></div>
+                </td>
               </tr>
               <tr>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;">NSO: Dispose &gt;1 yr after exercise</td>
-                <td style="padding: 6px 10px; border: 1px solid #ddd;"></td>
+                <td class="multiplier-cell-left">NSO: Dispose 1+ yr after exercise</td>
+                <td class="multiplier-cell-right">
+                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - gain * ltcg]</div>
+                  <div class="value"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 16px; margin-bottom: 16px; font-size: 0.85rem;">
+            The combined multiplier if you both exercise and donate — namely, go from "Cashless sell" to "ISO 1+ yr donate" is:
+          </div>
+          
+          <table class="multiplier-table">
+            <tbody>
+              <tr>
+                <td class="multiplier-cell-left">Cashless → ISO: dispose 1+ yr</td>
+                <td class="multiplier-cell-right">
+                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - sprain * income tax]</div>
+                  <div class="value" id="combined-multiplier"></div>
+                </td>
               </tr>
             </tbody>
           </table>
