@@ -507,13 +507,13 @@ function getSharesForCategory() {
   const shortSell = parseFloat(inputs[2].value || 0);      // Row 3
   const shortDonate = parseFloat(inputs[3].value || 0);    // Row 4
   
-  // ISO Long dispose (row 5-6) - Visual rows 5-6
-  const isoLongSell = parseFloat(inputs[4].value || 0);    // Row 5
-  const isoLongDonate = parseFloat(inputs[5].value || 0);  // Row 6
+  // NSO Long dispose (row 5-6) - Visual rows 5-6
+  const nsoLongSell = parseFloat(inputs[4].value || 0);    // Row 5
+  const nsoLongDonate = parseFloat(inputs[5].value || 0);  // Row 6
   
-  // NSO Long dispose (row 7-8) - Visual rows 7-8  
-  const nsoLongSell = parseFloat(inputs[6].value || 0);    // Row 7
-  const nsoLongDonate = parseFloat(inputs[7].value || 0);  // Row 8
+  // ISO Long dispose (row 7-8) - Visual rows 7-8  
+  const isoLongSell = parseFloat(inputs[6].value || 0);    // Row 7
+  const isoLongDonate = parseFloat(inputs[7].value || 0);  // Row 8
   
   // RSU (row 9) - Visual row 9
   const rsuSell = parseFloat(inputs[8].value || 0);        // Row 9
@@ -856,8 +856,8 @@ function updateDonationMultipliers() {
   
   const cashlessMultiplierCell = donationTable.querySelector("tbody tr:nth-child(1) td:nth-child(2) .value");
   const shortMultiplierCell = donationTable.querySelector("tbody tr:nth-child(2) td:nth-child(2) .value");
-  const isoLongMultiplierCell = donationTable.querySelector("tbody tr:nth-child(3) td:nth-child(2) .value");
-  const nsoLongMultiplierCell = donationTable.querySelector("tbody tr:nth-child(4) td:nth-child(2) .value");
+  const nsoLongMultiplierCell = donationTable.querySelector("tbody tr:nth-child(3) td:nth-child(2) .value");
+  const isoLongMultiplierCell = donationTable.querySelector("tbody tr:nth-child(4) td:nth-child(2) .value");
   
   // Get the combined multiplier cell
   const combinedMultiplierCell = document.getElementById("combined-multiplier");

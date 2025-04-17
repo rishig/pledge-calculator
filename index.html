@@ -236,27 +236,7 @@
               <div class="grid-cell" data-formula="exercise price * income tax">exercise price * income tax</div>
               <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
-              <!-- Row 5 - ISO Sell -->
-              <div class="grid-cell">ISO</div>
-              <div class="grid-cell">Dispose 1+ yr after exercise</div>
-              <div class="grid-cell">Sell</div>
-              <div class="grid-cell">ltcg * sprain</div>
-              <div class="grid-cell"></div>
-              <div class="grid-cell">(1 - ltcg) * sprain</div>
-              <div class="grid-cell"></div>
-              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
-              
-              <!-- Row 6 - ISO Donate -->
-              <div class="grid-cell">ISO</div>
-              <div class="grid-cell">Dispose 1+ yr after exercise</div>
-              <div class="grid-cell">Donate</div>
-              <div class="grid-cell">amt * spread <a href="#footnotes" >[5]</a></div>
-              <div class="grid-cell">sale price * (1 + match)</div>
-              <div class="grid-cell">- strike price</div>
-              <div class="grid-cell">sale price * income tax</div>
-              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
-              
-              <!-- Row 7 - NSO Sell -->
+              <!-- Row 5 - NSO Sell -->
               <div class="grid-cell">NSO</div>
               <div class="grid-cell">Dispose 1+ yr after exercise</div>
               <div class="grid-cell">Sell</div>
@@ -266,13 +246,33 @@
               <div class="grid-cell"></div>
               <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
-              <!-- Row 8 - NSO Donate -->
+              <!-- Row 6 - NSO Donate -->
               <div class="grid-cell">NSO</div>
               <div class="grid-cell">Dispose 1+ yr after exercise</div>
               <div class="grid-cell">Donate</div>
               <div class="grid-cell">income tax * spread</div>
               <div class="grid-cell">sale price * (1 + match)</div>
               <div class="grid-cell">- strike price - income tax * spread</div>
+              <div class="grid-cell">sale price * income tax</div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
+              
+              <!-- Row 7 - ISO Sell -->
+              <div class="grid-cell">ISO</div>
+              <div class="grid-cell">Dispose 1+ yr after exercise</div>
+              <div class="grid-cell">Sell</div>
+              <div class="grid-cell">ltcg * sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell">(1 - ltcg) * sprain</div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
+              
+              <!-- Row 8 - ISO Donate -->
+              <div class="grid-cell">ISO</div>
+              <div class="grid-cell">Dispose 1+ yr after exercise</div>
+              <div class="grid-cell">Donate</div>
+              <div class="grid-cell">amt * spread <a href="#footnotes" >[5]</a></div>
+              <div class="grid-cell">sale price * (1 + match)</div>
+              <div class="grid-cell">- strike price</div>
               <div class="grid-cell">sale price * income tax</div>
               <div class="grid-cell"><input type="text" value="0" class="shares-input"></div>
               
@@ -351,16 +351,16 @@
                 </td>
               </tr>
               <tr>
-                <td class="multiplier-cell-left">ISO: Dispose 1+ yr after exercise</td>
+                <td class="multiplier-cell-left">NSO: Dispose 1+ yr after exercise</td>
                 <td class="multiplier-cell-right">
-                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - sprain * ltcg]</div>
+                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - gain * ltcg]</div>
                   <div class="value"></div>
                 </td>
               </tr>
               <tr>
-                <td class="multiplier-cell-left">NSO: Dispose 1+ yr after exercise</td>
+                <td class="multiplier-cell-left">ISO: Dispose 1+ yr after exercise</td>
                 <td class="multiplier-cell-right">
-                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - gain * ltcg]</div>
+                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - sprain * ltcg]</div>
                   <div class="value"></div>
                 </td>
               </tr>
