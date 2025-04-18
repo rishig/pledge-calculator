@@ -884,15 +884,24 @@ function updateDonationMultipliers() {
   
   // Calculate the combined multiplier (Cashless to ISO 1+ yr)
   // Formula: (1 + match) * sale / [sale * (1 - income tax) - sprain * income tax]
-  const combinedMultiplier = (1 + matchMultiplier) * salePrice / 
+  const isoCombinedMultiplier = (1 + matchMultiplier) * salePrice / 
     (salePrice * (1 - incomeTaxRate) - sprain * incomeTaxRate);
+    
+  // Calculate the NSO combined multiplier (Cashless to NSO 1+ yr)
+  // Formula: (1 + match) * sale / [sale * (1 - income tax) - gain * income tax]
+  const nsoCombinedMultiplier = (1 + matchMultiplier) * salePrice / 
+    (salePrice * (1 - incomeTaxRate) - gain * incomeTaxRate);
+  
+  // Get the NSO combined multiplier cell
+  const nsoCombinedMultiplierCell = document.getElementById("nso-combined-multiplier");
   
   // Format and display the multipliers (rounded to 1 decimal place)
   if (cashlessMultiplierCell) cashlessMultiplierCell.textContent = cashlessMultiplier.toFixed(1) + 'x';
   if (shortMultiplierCell) shortMultiplierCell.textContent = shortMultiplier.toFixed(1) + 'x';
   if (isoLongMultiplierCell) isoLongMultiplierCell.textContent = isoLongMultiplier.toFixed(1) + 'x';
   if (nsoLongMultiplierCell) nsoLongMultiplierCell.textContent = nsoLongMultiplier.toFixed(1) + 'x';
-  if (combinedMultiplierCell) combinedMultiplierCell.textContent = combinedMultiplier.toFixed(1) + 'x';
+  if (nsoCombinedMultiplierCell) nsoCombinedMultiplierCell.textContent = nsoCombinedMultiplier.toFixed(1) + 'x';
+  if (combinedMultiplierCell) combinedMultiplierCell.textContent = isoCombinedMultiplier.toFixed(1) + 'x';
 }
 
 // Function to toggle collapsible sections

@@ -368,13 +368,20 @@
           </table>
           
           <div style="margin-top: 16px; margin-bottom: 16px; font-size: 0.85rem; max-width: 600px;">
-            The multiplier if you both exercise and donate (see "Common strategies" below)—namely, go from "Cashless sell" to "ISO: Donate 1+ yr after exercise":
+            The multipliers if you go directly from "Cashless sell" to "Donate 1+ yr after exercise" <a href="#footnotes" >[7]</a>. 
           </div>
           
           <table class="multiplier-table">
             <tbody>
               <tr>
-                <td class="multiplier-cell-left">Cashless → ISO: dispose 1+ yr</td>
+                <td class="multiplier-cell-left">Cashless → NSO: dispose 1+ yr</td>
+                <td class="multiplier-cell-right">
+                  <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - gain * income tax]</div>
+                  <div class="value" id="nso-combined-multiplier"></div>
+                </td>
+              </tr>
+              <tr>
+                <td class="multiplier-cell-left">Cashless → ISO: dispose 1+ yr <a href="#footnotes" >[8]</a></td>
                 <td class="multiplier-cell-right">
                   <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - sprain * income tax]</div>
                   <div class="value" id="combined-multiplier"></div>
@@ -413,7 +420,7 @@
 
                 <p style="font-size: 0.85rem; margin-bottom: 10px">
                   Some caveats: this graph is less battle-tested than the table above, and so could straight up have mistakes. There are other strategies not 
-                  represented that could increase the line (e.g. <a href="#footnotes" >[7]</a>). And finally, AMT considerations could change the ideal strategy. 
+                  represented that could increase the line (e.g. <a href="#footnotes" >[9]</a>). And finally, AMT considerations could change the ideal strategy. 
                 </p>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 10px">
@@ -453,7 +460,7 @@
                   <tbody>
                     <tr>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Cashless exercise during liquidity</td>
-                      <td style="padding: 6px 10px; border: 1px solid #ddd;">50% <a href="#footnotes" >[8]</a></td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">50% <a href="#footnotes" >[10]</a></td>
                     </tr>
                     <tr>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose &lt;1 yr after exercise</td>
@@ -574,7 +581,7 @@
 
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
                   An important note is that if you elect to switch your 30% donations to the 50% limit, you must do it for all your 30% donations that year. The election 
-                  also applies to all carryover from that year, though it doesn't apply to donations initiated in future years. <a href="#footnotes" >[9]</a> You cannot amend a tax return 
+                  also applies to all carryover from that year, though it doesn't apply to donations initiated in future years. You cannot amend a tax return 
                   to retroactively change this election, in either direction.
                 </p>
                 
@@ -702,29 +709,38 @@
               "Initial" because these numbers apply for the first X% of your pledge:
               <ul style="padding-left: 16px; margin-top: -8px; margin-bottom: 0; font-size: 0.85rem;">
                 <li>X &ge; 20% in almost all cases, assuming that you donate your pledge percentage each time you sell (donate in the same calendar year).</li>
-                <li>X &ge; 50% in many poor and middling outcomes, assuming you continue to have a salary.</li>
+                <li>X &ge; 50% in many poor and middling company outcomes, assuming you continue to have a salary.</li>
                 <li>In great outcomes, you hit <a href="#tax-deduction-limitation" onclick="toggleSection('deduction-limits-section')">tax deduction limitations</a>,
                   which reduces the multiple. If so, the numbers in the table will likely hold for the first 25% or 30% of your grant, and then 
-                  start dropping off to 4x for cashless and 5-6x for "dispose 1+ yr" beyond that (assuming a 3:1 match).</li>
+                  start dropping off to 4x for cashless and 5-6x for "dispose 1+ yr" for donations beyond that (assuming a 3:1 match).</li>
               </ul>
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px; margin-top: -16px;">
               The computation above does not take AMT into account (affects ISOs), nor the fixed donation costs mentioned in the bullets of footnote [3] 
-              (mostly matters if you're deciding whether to donate at all).
+              (which mostly matter if you're deciding whether to donate at all).
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[7]</span>
-              As an example, it seems possible (but I haven’t verified) that one can elect to realize income on the full sale price of short term option donations, and also deduct that value under the 50% limit. This would help in the common case where you have too many 30% donations and not enough 50% donations, since increasing your income increases the number of 30% donations you can make. 
+              A common strategy is to cashless exercise anything you're going to sell, and exercise 1+ yr in advance anything you're going to donate. 
+              This is because the savings from exercising early are not that high if you're selling, but huge if you're donating. 
+              These next multipliers are the relevant ones if you're considering that strategy. 
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[8]</span>
-              It's actually 60% federally for 2025 (still 50% for California).
+              The difference between the NSO and ISO multipliers here can often be stark. This is entirely driven by the denominator being small 
+              (you don't lose much money from the donation, either for NSOs or ISOs), rather than it being different for the charity. E.g.
+              ($20 to the charity)/($2 loss to you) is a really different multiple from ($20 to the charity)/($1 loss to you), but $2 vs $1 is not 
+              much, and likely other considerations (like exercise taxes) will be more important to whether you exercise NSOs or ISOs. Also note that the calculation 
+              here does not include AMT, which can increase the denominator for ISOs in some situations.
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[9]</span>
-              The election also applies to carryovers from past years in some way, though I don't know the details.
+              As an example, it seems possible (but I haven’t verified) that one can elect to realize income on the full sale price of short term option donations, and also deduct that value under the 50% limit. This would help in the common case where you have too many 30% donations and not enough 50% donations, since increasing your income increases the number of 30% donations you can make. 
             </p>
-
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[10]</span>
+              It's actually 60% federally for 2025 (still 50% for California).
+            </p>
             
             <p style="font-size: 0.85rem; margin-top: 24px; margin-bottom: 12px; font-weight: 500;">Errata</p>
             <ul style="font-size: 0.85rem; padding-left: 16px; margin-top: -8px; margin-bottom: 0px;">
