@@ -306,10 +306,11 @@
               <!-- Left side with metrics -->
               <div style="display: flex; flex-direction: column; font-size: 0.85rem;">
                 <div style="color: #666; font-size: 0.8rem;">
-                  <div style="display: flex; gap: 12px;">
+                  <div style="display: flex; gap: 12px; align-items: center;">
                     <div>Pledge: <span id="pledge-percentage"></span></div>
                     <div>Change from baseline: <span id="loss-to-you-percentage"></span></div>
                     <div>Cost of exercise (long): <span id="cost-of-exercise"></span></div>
+                    <div><a href="#footnotes">[6]</a></div>
                   </div>
                 </div>
               </div>
@@ -334,7 +335,7 @@
               <label style="font-weight: 500;">Donation multipliers</label>
               <div class="description">
                 How many dollars go to charity for each dollar you forgo, in each category. 
-                The computation here is "(Total to charity if Donate) / (Total to you if Sell - Total to you if Donate)" in each category <a href="#footnotes" >[6]</a>.
+                The computation here is "(Total to charity if Donate) / (Total to you if Sell - Total to you if Donate)" in each category <a href="#footnotes" >[7]</a>.
               </div>
             </div>
           </div>
@@ -342,7 +343,7 @@
             <thead>
               <tr>
                 <th class="multiplier-header multiplier-header-left">Holding period</th>
-                <th class="multiplier-header multiplier-header-right">Initial donation multiplier <a href="#footnotes" >[7]</a></th>
+                <th class="multiplier-header multiplier-header-right">Initial donation multiplier <a href="#footnotes" >[8]</a></th>
               </tr>
             </thead>
             <tbody>
@@ -378,7 +379,7 @@
           </table>
           
           <div style="margin-top: 16px; margin-bottom: 16px; font-size: 0.85rem; max-width: 600px;">
-            The multipliers if you go directly from "Cashless sell" to "Donate 1+ yr after exercise" <a href="#footnotes" >[8]</a>.
+            The multipliers if you go directly from "Cashless sell" to "Donate 1+ yr after exercise" <a href="#footnotes" >[9]</a>.
           </div>
           
           <table class="multiplier-table">
@@ -391,7 +392,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="multiplier-cell-left">Cashless → ISO: dispose 1+ yr <a href="#footnotes" >[9]</a></td>
+                <td class="multiplier-cell-left">Cashless → ISO: dispose 1+ yr <a href="#footnotes" >[10]</a></td>
                 <td class="multiplier-cell-right">
                   <div class="formula">(1 + match) * sale / [sale * (1 - income tax) - sprain * income tax]</div>
                   <div class="value" id="combined-multiplier"></div>
@@ -430,7 +431,7 @@
 
                 <p style="font-size: 0.85rem; margin-bottom: 10px">
                   Some caveats: this graph is less battle-tested than the table above, and so could straight up have mistakes. There are other strategies not 
-                  represented that could increase the line (e.g. <a href="#footnotes" >[10]</a>). And finally, AMT considerations could change the ideal strategy.
+                  represented that could increase the line (e.g. <a href="#footnotes" >[11]</a>). And finally, AMT considerations could change the ideal strategy.
                 </p>
                 
                 <p style="font-size: 0.85rem; margin-bottom: 10px">
@@ -470,7 +471,7 @@
                   <tbody>
                     <tr>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Cashless exercise during liquidity</td>
-                      <td style="padding: 6px 10px; border: 1px solid #ddd;">50% <a href="#footnotes" >[11]</a></td>
+                      <td style="padding: 6px 10px; border: 1px solid #ddd;">50% <a href="#footnotes" >[12]</a></td>
                     </tr>
                     <tr>
                       <td style="padding: 6px 10px; border: 1px solid #ddd;">Dispose &lt;1 yr after exercise</td>
@@ -716,11 +717,19 @@
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
               <span style="display: inline-block; min-width: 20px; font-weight: 500;">[6]</span>
+              <ul style="padding-left: 16px; margin-top: -8px; margin-bottom: 0; font-size: 0.85rem;">
+                <li>Change from baseline: The "baseline" here is the "Total to you" if you donate 0% and sell all non-RSU shares via cashless exercise (the default, if you take no actions). You can play around with it to answer questions like "what should my pledge percentage be if I want to donate 10% of the economic value of my shares"? Or "how much of the economic value do I get back from early exercising my donations"? Note that the number can be unreliable for pledge %-ages above 20-25%, due to tax deduction limitations (the discussion in [8] applies here as well).
+                  The calculation ignores all benefits to the charity; i.e. the change is only the change to your post-tax takehome from the shares.</li>
+                <li>Cost of exercise (long): The cost to exercise shares you hold for at least a year. Excludes AMT, and also excludes shares you hold for &lt;1 year; this is trying to capture how much money you have to risk before you know how the company will do. AMT can be meaningful; let me know if a calculator would be useful.</li>
+              </ul>
+            </p>
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[7]</span>
               It might be confusing why the multiples are more than the match. It's because the IRS provides a significant tax deduction for donations, and doubly so for donations of appreciated stock. 
               <a href="https://cs.stanford.edu/~rishig/giving-and-taxes" target="_blank" rel="noopener noreferrer">See here</a> for a visual explanation.
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
-              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[7]</span>
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[8]</span>
               "Initial" because these numbers apply for the first X% of your pledge:
               <ul style="padding-left: 16px; margin-top: -8px; margin-bottom: 0; font-size: 0.85rem;">
                 <li>X &ge; 20% in almost all cases, assuming that you donate your pledge percentage each time you sell (donate in the same calendar year).</li>
@@ -735,7 +744,7 @@
               (which mostly matter if you're deciding whether to donate at all).
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
-              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[8]</span>
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[9]</span>
               A common strategy is to cashless exercise anything you're going to sell, and exercise 1+ yr in advance anything you're going to donate. 
               This is because the savings from exercising early are not that high if you're selling, but huge if you're donating. 
               These next multipliers are the relevant ones if you're considering that strategy.
@@ -745,7 +754,7 @@
               the cash, DM me and I'll see if I can find someone to help (relatively more doable if you happen to have the 3:1 match).
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
-              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[9]</span>
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[10]</span>
               The difference between the NSO and ISO multipliers here can often be stark. This is entirely driven by the denominator being small 
               (you don't lose much money from the donation, either for NSOs or ISOs), rather than it being different for the charity. E.g.
               ($20 to the charity)/($2 loss to you) is a really different multiple from ($20 to the charity)/($1 loss to you), but $2 vs $1 is not 
@@ -753,11 +762,11 @@
               here does not include AMT, which can increase the denominator for ISOs in some situations.
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
-              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[10]</span>
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[11]</span>
               As an example, it seems possible (but I haven’t verified) that one can elect to realize income on the full sale price of short term option donations, and also deduct that value under the 50% limit. This would help in the common case where you have too many 30% donations and not enough 50% donations, since increasing your income increases the number of 30% donations you can make. 
             </p>
             <p style="font-size: 0.85rem; margin-bottom: 8px;">
-              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[11]</span>
+              <span style="display: inline-block; min-width: 20px; font-weight: 500;">[12]</span>
               It's actually 60% federally for 2025 (still 50% for California).
             </p>
             
