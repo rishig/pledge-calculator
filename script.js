@@ -357,14 +357,12 @@ function updateTotals() {
     }
     
     // 3. Cost of exercise (long only): 
-    // (strike price + income tax * spread) * (NSO long shares) + strike price * (ISO long shares)
-    const nsoLongShares = shares.nsoLongD; // NSO long shares only
-    const isoLongShares = shares.isoLongD; // ISO long shares only
-    const costOfExercise = (strikePrice + incomeTaxRate * spread) * nsoLongShares + strikePrice * isoLongShares;
+    // (strike price + income tax * spread) * (NSO long donated+sold) + strike price * (ISO long donated+sold)
+    const costOfExercise = (strikePrice + incomeTaxRate * spread) * shares.nsoLongDS + strikePrice * shares.isoLongDS;
     
     // Display the cost of exercise
     const costOfExerciseDollarContent = costOfExercise > 0 ? formatCurrency(costOfExercise) : '$0';
-    costOfExerciseElement.textContent = isoLongShares > 0 ? `${costOfExerciseDollarContent} + AMT` : costOfExerciseDollarContent;
+    costOfExerciseElement.textContent = shares.isoLongDS > 0 ? `${costOfExerciseDollarContent} + AMT` : costOfExerciseDollarContent;
   }
 }
 
@@ -590,6 +588,12 @@ function getSharesForCategory() {
   shares.longDS = shares.longD + shares.longS;
   shares.shortDS = shares.shortD + shares.shortS;
   shares.cashlessDS = shares.cashlessD + shares.cashlessS;
+  
+  // Calculate long DS values by type
+  shares.nsoLongS = parseFloat(nsoLongSell || 0); // NSO long sold shares
+  shares.isoLongS = parseFloat(isoLongSell || 0); // ISO long sold shares
+  shares.nsoLongDS = shares.nsoLongD + shares.nsoLongS; // NSO long donated + sold
+  shares.isoLongDS = shares.isoLongD + shares.isoLongS; // ISO long donated + sold
   
   return shares;
 }
