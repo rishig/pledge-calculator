@@ -358,8 +358,8 @@ function updateTotals() {
     
     // 3. Cost of exercise (long only): 
     // (strike price + income tax * spread) * (NSO long shares) + strike price * (ISO long shares)
-    const nsoLongShares = shares.nsoD; // NSO long shares only
-    const isoLongShares = shares.isoD; // ISO long shares only
+    const nsoLongShares = shares.nsoLongD; // NSO long shares only
+    const isoLongShares = shares.isoLongD; // ISO long shares only
     const costOfExercise = (strikePrice + incomeTaxRate * spread) * nsoLongShares + strikePrice * isoLongShares;
     
     // Display the cost of exercise
@@ -582,8 +582,8 @@ function getSharesForCategory() {
   shares.shortS = parseFloat(shortSell || 0);
   shares.cashlessD = parseFloat(cashlessDonate || 0);
   shares.cashlessS = parseFloat(cashlessSell || 0);
-  shares.nsoD = parseFloat(nsoLongDonate || 0);
-  shares.isoD = parseFloat(isoLongDonate || 0); // Added for the new graph calculation
+  shares.nsoLongD = parseFloat(nsoLongDonate || 0);
+  shares.isoLongD = parseFloat(isoLongDonate || 0); // Long donated shares by type
   shares.rsu = parseFloat(rsuSell || 0);
   
   // Calculate DS values (donated + sold)
@@ -619,7 +619,7 @@ function updateComputationTable() {
   
   // Calculate row 3: Income generated from exercise and sale
   const row3Value = Math.round((shares.cashlessDS + shares.shortS + shares.longS) * sprain + 
-                    (shares.shortD + shares.nsoD) * spread + shares.rsu * salePrice);
+                    (shares.shortD + shares.nsoLongD) * spread + shares.rsu * salePrice);
   document.getElementById('calc-row3').textContent = '$' + row3Value.toLocaleString();
     
   // Calculate row 4: Additional income needed
@@ -638,7 +638,7 @@ function updateComputationTable() {
   }
   
   // Update graph with the new values and component values for calculations
-  updateDeductionGraph(row1Value, row2Value, row3Value, row4Value, shares.nsoD, shares.isoD, exercisePrice, strikePrice, salePrice, incomeTaxRate);
+  updateDeductionGraph(row1Value, row2Value, row3Value, row4Value, shares.nsoLongD, shares.isoLongD, exercisePrice, strikePrice, salePrice, incomeTaxRate);
 }
 
 // Function to draw the deduction graph
@@ -646,7 +646,7 @@ function updateComputationTable() {
 // row2: Deductions subject to 50% max
 // row3: Income generated from exercise and sale of company shares
 // row4: Additional income needed to maximize deduction. Only used for error checking and determining the scale of the graph
-function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice, strikePrice, salePrice, incomeTaxRate) {  
+function updateDeductionGraph(row1, row2, row3, row4, nsoLongD, isoLongD, exercisePrice, strikePrice, salePrice, incomeTaxRate) {  
   const canvas = document.getElementById('deduction-graph');
   if (!canvas) return;
   
@@ -723,18 +723,18 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
   ctx.moveTo(leftPadding + (startX / maxX) * (graphWidth - (leftPadding - padding)), canvas.height - padding);
   
   // First segment endpoint. Below this, we make the cost basis election for all ISOs and NSOs.
-  const firstX = (row2 + nsoD * exercisePrice + isoD * strikePrice) / 0.5 - row3;
-  const firstY = (row2 + nsoD * exercisePrice + isoD * strikePrice) * incomeTaxRate;
+  const firstX = (row2 + nsoLongD * exercisePrice + isoLongD * strikePrice) / 0.5 - row3;
+  const firstY = (row2 + nsoLongD * exercisePrice + isoLongD * strikePrice) * incomeTaxRate;
   lineTo(firstX, firstY);
   
   // Second segment endpoint. Below this, we make the cost basis election for all NSOs and some ISOs.
-  const secondX = incomeNeededForDeductions(row2 + nsoD * exercisePrice, isoD * salePrice) - row3;
-  const secondY = (row2 + nsoD * exercisePrice + isoD * salePrice) * incomeTaxRate;
+  const secondX = incomeNeededForDeductions(row2 + nsoLongD * exercisePrice, isoLongD * salePrice) - row3;
+  const secondY = (row2 + nsoLongD * exercisePrice + isoLongD * salePrice) * incomeTaxRate;
   lineTo(secondX, secondY);
 
   // Third segment endpoint. Below this, we make the cost basis election for some NSOs and no ISOs.
-  const thirdX = incomeNeededForDeductions(row2, nsoD * salePrice + isoD * salePrice) - row3;
-  const thirdY = (row2 + nsoD * salePrice + isoD * salePrice) * incomeTaxRate;
+  const thirdX = incomeNeededForDeductions(row2, nsoLongD * salePrice + isoLongD * salePrice) - row3;
+  const thirdY = (row2 + nsoLongD * salePrice + isoLongD * salePrice) * incomeTaxRate;
   lineTo(thirdX, thirdY);
 
   if (Math.abs(thirdX - row4) > 0.01) {
@@ -839,19 +839,19 @@ function updateDeductionGraph(row1, row2, row3, row4, nsoD, isoD, exercisePrice,
       }
       
       // Only show cost basis election if we have long-term donated shares      
-      if (nsoD > 0 || isoD > 0) {
-        const haveBoth = nsoD > 0 && isoD > 0;
+      if (nsoLongD > 0 || isoLongD > 0) {
+        const haveBoth = nsoLongD > 0 && isoLongD > 0;
         if (graphX < firstX) {
           segmentText = haveBoth 
-            ? `NSO: ${nsoD} shares (all), ISO: ${isoD} shares (all)` 
-            : `${nsoD + isoD} shares (all)`;
-        } else if (graphX < secondX && isoD > 0) {
-          const isoShares = Math.round(isoD * (secondX - graphX) / (secondX - firstX));
+            ? `NSO: ${nsoLongD} shares (all), ISO: ${isoLongD} shares (all)` 
+            : `${nsoLongD + isoLongD} shares (all)`;
+        } else if (graphX < secondX && isoLongD > 0) {
+          const isoShares = Math.round(isoLongD * (secondX - graphX) / (secondX - firstX));
           segmentText = haveBoth
-            ? `NSO: ${nsoD} shares (all), ISO: ${isoShares} shares`
+            ? `NSO: ${nsoLongD} shares (all), ISO: ${isoShares} shares`
             : `${isoShares} shares`; 
-        } else if (graphX < thirdX && nsoD > 0) {          
-          const nsoShares = Math.round(nsoD * (thirdX - graphX) / (thirdX - secondX));
+        } else if (graphX < thirdX && nsoLongD > 0) {          
+          const nsoShares = Math.round(nsoLongD * (thirdX - graphX) / (thirdX - secondX));
           segmentText = haveBoth
             ? `NSO: ${nsoShares} shares, ISO: none`
             : `${nsoShares} shares`;
