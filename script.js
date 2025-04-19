@@ -309,6 +309,63 @@ function updateTotals() {
   // Display the total to you rounded down to the nearest dollar
   const roundedTotalToYou = Math.floor(totalToYou);
   totalToYouElement.textContent = roundedTotalToYou > 0 ? `$${roundedTotalToYou.toLocaleString()}` : '$0';
+  
+  // Calculate and display the new values
+  const pledgePercentageElement = document.getElementById('pledge-percentage');
+  const changeFromBaselineElement = document.getElementById('loss-to-you-percentage');
+  const costOfExerciseElement = document.getElementById('cost-of-exercise');
+  
+  if (pledgePercentageElement && changeFromBaselineElement && costOfExerciseElement) {
+    // Get the shares for different categories
+    const shares = getSharesForCategory();
+    
+    // Calculate the total number of "donate" shares
+    const donateShares = shares.cashlessD + shares.shortD + shares.longD;
+    
+    // Calculate total shares excluding RSU
+    const totalSharesExcludingRSU = sharesTotal - shares.rsu;
+    
+    // Get input values
+    const incomeTaxRate = parseInputAsNumber(incomeTaxRateInput) / 100;
+    const strikePrice = parseInputAsNumber(strikePriceInput);
+    const exercisePrice = parseInputAsNumber(exercisePriceInput);
+    const salePrice = parseInputAsNumber(salePriceInput);
+    
+    // Calculate spread and sprain
+    const spread = exercisePrice - strikePrice;
+    const sprain = salePrice - strikePrice;
+
+    // 1. Pledge percentage: donate shares / total shares (excluding RSU)
+    if (totalSharesExcludingRSU > 0) {
+      const pledgePercentage = Math.round((donateShares / totalSharesExcludingRSU) * 100);
+      pledgePercentageElement.textContent = pledgePercentage + '%';
+    } else {
+      pledgePercentageElement.textContent = '—';
+    }
+    
+    // 2. Change from baseline: (actual total to you / (total shares * (1 - income tax) * sprain)) - 100%
+    const maxPossibleTotal = totalSharesExcludingRSU * (1 - incomeTaxRate) * sprain;
+    if (totalSharesExcludingRSU > 0 && maxPossibleTotal > 0) {
+      const totalToYouPercentage = (totalToYou / maxPossibleTotal) * 100;
+      // Change percentage is total to you percentage minus 100%
+      const changePercentage = Math.round(totalToYouPercentage - 100);
+      // Add a "+" sign for positive values
+      const sign = changePercentage > 0 ? '+' : '';
+      changeFromBaselineElement.textContent = sign + changePercentage + '%';
+    } else {
+      changeFromBaselineElement.textContent = '—';
+    }
+    
+    // 3. Cost of exercise (long only): 
+    // (strike price + income tax * spread) * (NSO long shares) + strike price * (ISO long shares)
+    const nsoLongShares = shares.nsoD; // NSO long shares only
+    const isoLongShares = shares.isoD; // ISO long shares only
+    const costOfExercise = (strikePrice + incomeTaxRate * spread) * nsoLongShares + strikePrice * isoLongShares;
+    
+    // Display the cost of exercise
+    const costOfExerciseDollarContent = costOfExercise > 0 ? formatCurrency(costOfExercise) : '$0';
+    costOfExerciseElement.textContent = isoLongShares > 0 ? `${costOfExerciseDollarContent} + AMT` : costOfExerciseDollarContent;
+  }
 }
 
 // Function to update exercise cost notes
