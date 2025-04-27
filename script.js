@@ -301,14 +301,14 @@ function updateTotals() {
   // Calculate and display totals for charity and for the user
   // Total to charity is the charity column (rounded down to nearest dollar)
   const roundedCharityTotal = Math.floor(charityTotal);
-  totalToCharityElement.textContent = roundedCharityTotal > 0 ? `$${roundedCharityTotal.toLocaleString()}` : '$0';
+  totalToCharityElement.textContent = `$${roundedCharityTotal.toLocaleString()}`;
   
   // Total to you is the cash + tax deduction 
   const totalToYou = cashTotal + deductionTotal;
   
   // Display the total to you rounded down to the nearest dollar
   const roundedTotalToYou = Math.floor(totalToYou);
-  totalToYouElement.textContent = roundedTotalToYou > 0 ? `$${roundedTotalToYou.toLocaleString()}` : '$0';
+  totalToYouElement.textContent = `$${roundedTotalToYou.toLocaleString()}`;
 }
 
 // Function to update exercise cost notes
