@@ -343,9 +343,11 @@ function updateTotals() {
       pledgePercentageElement.textContent = '—';
     }
     
-    // 2. Change from baseline: (actual total to you / (total shares * (1 - income tax) * sprain)) - 100%
-    const maxPossibleTotal = totalSharesExcludingRSU * (1 - incomeTaxRate) * sprain;
-    if (totalSharesExcludingRSU > 0 && maxPossibleTotal > 0) {
+    // 2. Change from baseline: (actual total to you / maxPossibleTotal) - 100%
+    // maxPossibleTotal = non-RSU shares * (1 - income tax) * sprain + RSU shares * (1 - income tax) * sale price
+    const maxPossibleTotal = totalSharesExcludingRSU * (1 - incomeTaxRate) * sprain + 
+                             shares.rsu * (1 - incomeTaxRate) * salePrice;
+    if ((totalSharesExcludingRSU > 0 || shares.rsu > 0) && maxPossibleTotal > 0) {
       const totalToYouPercentage = (totalToYou / maxPossibleTotal) * 100;
       // Change percentage is total to you percentage minus 100%
       const changePercentage = Math.round(totalToYouPercentage - 100);
